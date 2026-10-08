@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MessLoc</string>
+    <string name="welcome">Welcome to MessLoc</string>
+    <string name="welcome_description">Find your next home-cooked meal</string>
+</resources>
