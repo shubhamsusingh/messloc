@@ -1,0 +1,8 @@
+com\MessLoc\service\AuthServiceTest.class
+com\MessLoc\controller\MessControllerTest.class
+com\MessLoc\controller\MessControllerTest$TestMongoConfig.class
+com\MessLoc\controller\RoleAuthorizationTest$TestMongoConfig.class
+com\MessLoc\MessLocApplicationTests$TestMongoConfig.class
+com\MessLoc\security\JwtServiceTest.class
+com\MessLoc\controller\RoleAuthorizationTest.class
+com\MessLoc\MessLocApplicationTests.class
