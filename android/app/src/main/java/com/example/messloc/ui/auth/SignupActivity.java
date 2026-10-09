@@ -11,38 +11,33 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.example.messloc.R;
-import com.example.messloc.databinding.ActivityLoginBinding;
 import com.example.messloc.databinding.ActivitySignupBinding;
-import com.example.messloc.ui.main.MainActivity;
 import com.example.messloc.viewmodel.AuthViewModel;
 
-public class LoginActivity extends AppCompatActivity {
-
+public class SignupActivity extends AppCompatActivity {
     private AuthViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-//        setContentView(R.layout.activity_login);
+//        setContentView(R.layout.activity_signup);
 
-        ActivityLoginBinding binding =
-                ActivityLoginBinding.inflate(getLayoutInflater());
+        ActivitySignupBinding binding =
+                ActivitySignupBinding.inflate(getLayoutInflater());
 
         setContentView(binding.getRoot());
 
         viewModel = new AuthViewModel();
-        binding.setLoginModel(viewModel);
+        binding.setSignupModel(viewModel);
         binding.setLifecycleOwner(this);
 
-        binding.registerTextView.setOnClickListener(v->{
-            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-            startActivity(intent);
-        });
+        binding.loginTextView.setOnClickListener(v -> {
 
-        binding.button.setOnClickListener(v->{
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent intent =
+                    new Intent(SignupActivity.this, LoginActivity.class);
+
             startActivity(intent);
-            finish();
+
         });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

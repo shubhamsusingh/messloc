@@ -1,5 +1,28 @@
 <resources>
     <string name="app_name">MessLoc</string>
-    <string name="welcome">Welcome to MessLoc</string>
     <string name="welcome_description">Find your next home-cooked meal</string>
+
+
+    <!-- Authentication - Common -->
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+
+    <!-- Login -->
+    <string name="welcome">Welcome Back!</string>
+    <string name="login_subtitle">Login to continue</string>
+    <string name="login">Login</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="register">Register</string>
+
+    <!-- Signup -->
+    <string name="create_account">Create Account</string>
+    <string name="signup_subtitle">Sign up to get started</string>
+    <string name="signup">Sign Up</string>
+    <string name="already_have_account">Already have an account?</string>
+
+    <!-- Accessibility -->
+    <string name="logo_content_description">MessLoc Logo</string>
+
+
 </resources>
