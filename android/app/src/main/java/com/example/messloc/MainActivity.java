@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                 new Intent(this, LoginActivity.class);
 
         startActivity(intent);
-
+        finish();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

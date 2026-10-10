@@ -27,6 +27,9 @@ android {
             }
         }
     }
+    buildFeatures {
+        dataBinding = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -36,6 +39,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.activity.ktx)
+    implementation(libs.androidx.databinding.runtime)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)

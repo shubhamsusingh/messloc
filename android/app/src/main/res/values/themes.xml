@@ -6,6 +6,22 @@
         <item name="android:fontFamily">@font/poppins</item>
         <item name="fontFamily">@font/poppins</item>
 
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+
+        <item name="android:colorAccent">@color/primary</item>
+
+        <item name="android:windowBackground">@color/screen_background</item>
+
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+
+        <item name="android:statusBarColor">@color/screen_background</item>
+        <item name="android:navigationBarColor">@color/screen_background</item>
+
+        <item name="android:windowLightStatusBar">true</item>
+
     </style>
 
     <style name="Theme.MessLoc" parent="Base.Theme.MessLoc" />
