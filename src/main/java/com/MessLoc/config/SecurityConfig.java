@@ -78,7 +78,7 @@ public class SecurityConfig {
                         // Protected auth endpoints (current authenticated account)
                         .requestMatchers("/api/auth/me").authenticated()
                         // Public mess discovery endpoints
-                        .requestMatchers("/api/messes/**").permitAll()
+                        .requestMatchers("/api/messes", "/api/messes/**").permitAll()
 
                         // Role-specific protected endpoints
                         .requestMatchers("/api/user/**").hasRole("USER")
