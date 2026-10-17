@@ -32,6 +32,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import org.mockito.ArgumentCaptor;
+import org.springframework.dao.DuplicateKeyException;
+
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -240,5 +243,69 @@ class AuthServiceTest {
         when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
 
         assertThrows(OwnerPendingException.class, () -> authService.signin(request));
+    }
+
+    @Test
+    void testRegisterUser_PasswordIsSecurelyHashedBeforeStorage() {
+        UserSignupRequest request = UserSignupRequest.builder()
+                .name("Shivam Kumar")
+                .email("shivam@example.com")
+                .password("PlainSecretPassword123")
+                .phone("9876543210")
+                .build();
+
+        when(userRepository.existsByEmail("shivam@example.com")).thenReturn(false);
+        when(passwordEncoder.encode("PlainSecretPassword123")).thenReturn("$2a$12$e8FvMockedBCryptHashStringHere12345");
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(jwtService.generateToken(any(User.class))).thenReturn("mock_token");
+        when(jwtService.getJwtExpirationMs()).thenReturn(86400000L);
+
+        authService.registerUser(request);
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User savedUser = userCaptor.getValue();
+
+        assertNotEquals("PlainSecretPassword123", savedUser.getPassword(), "Plaintext password must NEVER be stored in the entity");
+        assertTrue(savedUser.getPassword().startsWith("$2a$12$"), "Password must be BCrypt hashed");
+        assertEquals(Role.USER, savedUser.getRole());
+        assertEquals(AccountStatus.ACTIVE, savedUser.getStatus());
+    }
+
+    @Test
+    void testRegisterUser_MongoDuplicateKeyException_TranslatesToEmailAlreadyExistsException() {
+        UserSignupRequest request = UserSignupRequest.builder()
+                .name("Shivam Kumar")
+                .email("duplicate@example.com")
+                .password("Password123")
+                .phone("9876543210")
+                .build();
+
+        when(userRepository.existsByEmail("duplicate@example.com")).thenReturn(false);
+        when(passwordEncoder.encode("Password123")).thenReturn("encoded_pass");
+        when(userRepository.save(any(User.class))).thenThrow(new DuplicateKeyException("E11000 duplicate key error collection: users index: email_1 dup key"));
+
+        assertThrows(EmailAlreadyExistsException.class, () -> authService.registerUser(request));
+    }
+
+    @Test
+    void testGetCurrentUser_Success() {
+        when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
+
+        var response = authService.getCurrentUser("shivam@example.com");
+
+        assertNotNull(response);
+        assertEquals("shivam@example.com", response.getEmail());
+        assertEquals("Shivam Kumar", response.getName());
+        assertEquals(Role.USER, response.getRole());
+        assertEquals(AccountStatus.ACTIVE, response.getStatus());
+    }
+
+    @Test
+    void testGetCurrentUser_NotFound_ThrowsResourceNotFoundException() {
+        when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
+
+        assertThrows(com.MessLoc.exception.ResourceNotFoundException.class,
+                () -> authService.getCurrentUser("nonexistent@example.com"));
     }
 }

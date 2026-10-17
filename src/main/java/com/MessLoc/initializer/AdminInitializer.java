@@ -20,16 +20,16 @@ public class AdminInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${messmate.admin.email}")
+    @Value("${messloc.admin.email:${messmate.admin.email:admin@messloc.com}}")
     private String adminEmail;
 
-    @Value("${messmate.admin.password}")
+    @Value("${messloc.admin.password:${messmate.admin.password:Admin@MessLoc123}}")
     private String adminPassword;
 
-    @Value("${messmate.admin.name}")
+    @Value("${messloc.admin.name:${messmate.admin.name:MessLoc Administrator}}")
     private String adminName;
 
-    @Value("${messmate.admin.phone}")
+    @Value("${messloc.admin.phone:${messmate.admin.phone:9999999999}}")
     private String adminPhone;
 
     public AdminInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {

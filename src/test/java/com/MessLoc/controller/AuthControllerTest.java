@@ -79,8 +79,10 @@ class AuthControllerTest {
 
     private User activeUser;
     private User blockedUser;
+    private User inactiveUser;
     private String activeUserToken;
     private String blockedUserToken;
+    private String inactiveUserToken;
 
     @BeforeEach
     void setUp() {
@@ -100,13 +102,24 @@ class AuthControllerTest {
                 .status(AccountStatus.BLOCKED)
                 .build();
 
+        inactiveUser = User.builder()
+                .id("u-888")
+                .name("Inactive User")
+                .email("inactive@messloc.com")
+                .role(Role.USER)
+                .status(AccountStatus.INACTIVE)
+                .build();
+
         when(userDetailsService.loadUserByUsername("shivam@messloc.com"))
                 .thenReturn(new CustomUserDetails(activeUser));
         when(userDetailsService.loadUserByUsername("blocked@messloc.com"))
                 .thenReturn(new CustomUserDetails(blockedUser));
+        when(userDetailsService.loadUserByUsername("inactive@messloc.com"))
+                .thenReturn(new CustomUserDetails(inactiveUser));
 
         activeUserToken = "Bearer " + jwtService.generateToken(activeUser);
         blockedUserToken = "Bearer " + jwtService.generateToken(blockedUser);
+        inactiveUserToken = "Bearer " + jwtService.generateToken(inactiveUser);
     }
 
     @Test
@@ -377,5 +390,128 @@ class AuthControllerTest {
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.status").value(405));
+    }
+
+    @Test
+    void testAttemptAdminSignup_DirectEndpoint_ReturnsUnauthorized() throws Exception {
+        // Public registration must not provide any ADMIN signup endpoint
+        mockMvc.perform(post("/api/auth/signup/admin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"fakeadmin@messloc.com\",\"password\":\"AdminPass123\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testAttemptAdminSignup_InjectedRoleInUserSignup_RoleRemainsUser() throws Exception {
+        // Attempting to inject "role": "ADMIN" into UserSignupRequest must be ignored
+        String maliciousPayload = "{" +
+                "\"name\":\"Malicious User\"," +
+                "\"email\":\"malicious@messloc.com\"," +
+                "\"password\":\"StrongPass123\"," +
+                "\"phone\":\"9876543210\"," +
+                "\"role\":\"ADMIN\"" +
+                "}";
+
+        AuthResponse authResponse = AuthResponse.builder()
+                .success(true)
+                .message("User registered successfully")
+                .token("mock_jwt")
+                .user(UserResponse.fromEntity(activeUser))
+                .build();
+
+        when(authService.registerUser(any(UserSignupRequest.class))).thenReturn(authResponse);
+
+        mockMvc.perform(post("/api/auth/signup/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(maliciousPayload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.user.role").value("USER"));
+    }
+
+    @Test
+    void testUserSignup_ValidationFailure_InvalidPhoneNumber_Returns400() throws Exception {
+        UserSignupRequest request = UserSignupRequest.builder()
+                .name("Shivam Kumar")
+                .email("shivam@messloc.com")
+                .password("StrongPass123")
+                .phone("12345") // Invalid: not 10 digits
+                .build();
+
+        mockMvc.perform(post("/api/auth/signup/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.data.phone").exists());
+    }
+
+    @Test
+    void testUserSignup_ValidationFailure_BlankName_Returns400() throws Exception {
+        UserSignupRequest request = UserSignupRequest.builder()
+                .name("") // Invalid: blank
+                .email("shivam@messloc.com")
+                .password("StrongPass123")
+                .phone("9876543210")
+                .build();
+
+        mockMvc.perform(post("/api/auth/signup/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.data.name").exists());
+    }
+
+    @Test
+    void testGetCurrentUser_WithInactiveAccountToken_Returns401() throws Exception {
+        mockMvc.perform(get("/api/auth/me")
+                        .header("Authorization", inactiveUserToken))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(401));
+    }
+
+    @Test
+    void testGetCurrentUser_WithExpiredToken_Returns401() throws Exception {
+        JwtService expiredJwtService = new JwtService();
+        org.springframework.test.util.ReflectionTestUtils.setField(expiredJwtService, "secretKey", "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970");
+        org.springframework.test.util.ReflectionTestUtils.setField(expiredJwtService, "jwtExpirationMs", -60000L);
+        org.springframework.test.util.ReflectionTestUtils.setField(expiredJwtService, "jwtIssuer", "MessLoc");
+
+        String expiredToken = "Bearer " + expiredJwtService.generateToken(activeUser);
+
+        mockMvc.perform(get("/api/auth/me")
+                        .header("Authorization", expiredToken))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(401));
+    }
+
+    @Test
+    void testGetCurrentUser_WithTamperedToken_Returns401() throws Exception {
+        String validToken = jwtService.generateToken(activeUser);
+        String[] parts = validToken.split("\\.");
+        String tamperedToken = "Bearer " + parts[0] + "." + parts[1] + ".tamperedInvalidSignature";
+
+        mockMvc.perform(get("/api/auth/me")
+                        .header("Authorization", tamperedToken))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(401));
+    }
+
+    @Test
+    void testResponses_NeverExposeSensitiveDataOrPasswords() throws Exception {
+        when(authService.getCurrentUser("shivam@messloc.com"))
+                .thenReturn(UserResponse.fromEntity(activeUser));
+
+        mockMvc.perform(get("/api/auth/me")
+                        .header("Authorization", activeUserToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.password").doesNotExist())
+                .andExpect(jsonPath("$.data.passwordHash").doesNotExist())
+                .andExpect(jsonPath("$.data.secret").doesNotExist())
+                .andExpect(jsonPath("$.password").doesNotExist());
     }
 }
