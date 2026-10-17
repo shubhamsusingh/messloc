@@ -1,6 +1,10 @@
+com/MessLoc/controller/MessControllerTest.class
 com/MessLoc/MessLocApplicationTests.class
+com/MessLoc/controller/AuthControllerTest.class
 com/MessLoc/MessLocApplicationTests$TestMongoConfig.class
+com/MessLoc/controller/AuthControllerTest$TestMongoConfig.class
 com/MessLoc/service/AuthServiceTest.class
 com/MessLoc/controller/RoleAuthorizationTest$TestMongoConfig.class
 com/MessLoc/controller/RoleAuthorizationTest.class
 com/MessLoc/security/JwtServiceTest.class
+com/MessLoc/controller/MessControllerTest$TestMongoConfig.class

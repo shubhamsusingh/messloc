@@ -1,5 +1,6 @@
-/Users/shivamkumar/Desktop/MessLoc/src/test/java/com/MessLoc/MessLocApplicationTests.java
-/Users/shivamkumar/Desktop/MessLoc/src/test/java/com/MessLoc/controller/MessControllerTest.java
-/Users/shivamkumar/Desktop/MessLoc/src/test/java/com/MessLoc/controller/RoleAuthorizationTest.java
-/Users/shivamkumar/Desktop/MessLoc/src/test/java/com/MessLoc/security/JwtServiceTest.java
-/Users/shivamkumar/Desktop/MessLoc/src/test/java/com/MessLoc/service/AuthServiceTest.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/test/java/com/MessLoc/MessLocApplicationTests.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/test/java/com/MessLoc/controller/AuthControllerTest.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/test/java/com/MessLoc/controller/MessControllerTest.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/test/java/com/MessLoc/controller/RoleAuthorizationTest.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/test/java/com/MessLoc/security/JwtServiceTest.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/test/java/com/MessLoc/service/AuthServiceTest.java
