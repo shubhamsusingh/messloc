@@ -24,6 +24,9 @@
     <color name="input_background">#FFFFFF</color>
     <color name="input_border">#CBD5E1</color>
 
+    <!-- disabled -->
+    <color name="disabled">#94A3B8</color>
+
     <!-- Status -->
     <color name="error">#DC2626</color>
     <color name="success">#15803D</color>
