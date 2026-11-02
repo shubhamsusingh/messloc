@@ -5,6 +5,9 @@ import com.MessLoc.dto.mess.MessResponse;
 import com.MessLoc.dto.mess.PublicMessResponse;
 import com.MessLoc.dto.mess.UpdateMessRequest;
 import com.MessLoc.dto.response.ApiResponse;
+import com.MessLoc.entity.User;
+import com.MessLoc.exception.UnauthorizedMessAccessException;
+import com.MessLoc.repository.UserRepository;
 import com.MessLoc.security.CustomUserDetails;
 import com.MessLoc.service.MessService;
 import jakarta.validation.Valid;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,18 +27,21 @@ import java.util.List;
 public class MessController {
 
     private final MessService messService;
+    private final UserRepository userRepository;
 
     // ==========================================
     // OWNER APIs
     // ==========================================
 
-    @PostMapping("/owner/messes")
+    @PostMapping({"/owner/messes", "/messes"})
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<MessResponse>> createMess(
             @Valid @RequestBody CreateMessRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Authentication authentication) {
         
-        MessResponse response = messService.createMess(request, userDetails.getId());
+        String ownerId = resolveOwnerId(userDetails, authentication);
+        MessResponse response = messService.createMess(request, ownerId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Mess created successfully", response));
     }
@@ -42,9 +49,11 @@ public class MessController {
     @GetMapping("/owner/messes")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<List<MessResponse>>> getOwnerMesses(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Authentication authentication) {
         
-        List<MessResponse> response = messService.getOwnerMesses(userDetails.getId());
+        String ownerId = resolveOwnerId(userDetails, authentication);
+        List<MessResponse> response = messService.getOwnerMesses(ownerId);
         return ResponseEntity.ok(ApiResponse.success("Messes fetched successfully", response));
     }
 
@@ -52,50 +61,60 @@ public class MessController {
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<MessResponse>> getOwnerMess(
             @PathVariable String id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Authentication authentication) {
         
-        MessResponse response = messService.getOwnerMess(id, userDetails.getId());
+        String ownerId = resolveOwnerId(userDetails, authentication);
+        MessResponse response = messService.getOwnerMess(id, ownerId);
         return ResponseEntity.ok(ApiResponse.success("Mess fetched successfully", response));
     }
 
-    @PutMapping("/owner/messes/{id}")
+    @PutMapping({"/owner/messes/{id}", "/messes/{id}"})
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<MessResponse>> updateMess(
             @PathVariable String id,
             @Valid @RequestBody UpdateMessRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Authentication authentication) {
         
-        MessResponse response = messService.updateMess(id, request, userDetails.getId());
+        String ownerId = resolveOwnerId(userDetails, authentication);
+        MessResponse response = messService.updateMess(id, request, ownerId);
         return ResponseEntity.ok(ApiResponse.success("Mess updated successfully", response));
     }
 
-    @DeleteMapping("/owner/messes/{id}")
+    @DeleteMapping({"/owner/messes/{id}", "/messes/{id}"})
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<Void>> deleteMess(
             @PathVariable String id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Authentication authentication) {
         
-        messService.deleteMess(id, userDetails.getId());
-        return ResponseEntity.noContent().build();
+        String ownerId = resolveOwnerId(userDetails, authentication);
+        messService.deleteMess(id, ownerId);
+        return ResponseEntity.ok(ApiResponse.success("Mess deleted successfully", null));
     }
 
-    @PatchMapping("/owner/messes/{id}/activate")
+    @PatchMapping({"/owner/messes/{id}/activate", "/messes/{id}/activate"})
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<Void>> activateMess(
             @PathVariable String id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Authentication authentication) {
         
-        messService.activateMess(id, userDetails.getId());
+        String ownerId = resolveOwnerId(userDetails, authentication);
+        messService.activateMess(id, ownerId);
         return ResponseEntity.ok(ApiResponse.success("Mess activated successfully", null));
     }
 
-    @PatchMapping("/owner/messes/{id}/deactivate")
+    @PatchMapping({"/owner/messes/{id}/deactivate", "/messes/{id}/deactivate"})
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<Void>> deactivateMess(
             @PathVariable String id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            Authentication authentication) {
         
-        messService.deactivateMess(id, userDetails.getId());
+        String ownerId = resolveOwnerId(userDetails, authentication);
+        messService.deactivateMess(id, ownerId);
         return ResponseEntity.ok(ApiResponse.success("Mess deactivated successfully", null));
     }
 
@@ -104,8 +123,9 @@ public class MessController {
     // ==========================================
 
     @GetMapping("/messes")
-    public ResponseEntity<ApiResponse<List<PublicMessResponse>>> getPublicMesses() {
-        List<PublicMessResponse> response = messService.getPublicMesses();
+    public ResponseEntity<ApiResponse<List<PublicMessResponse>>> getPublicMesses(
+            @RequestParam(required = false) String city) {
+        List<PublicMessResponse> response = messService.getPublicMesses(city);
         return ResponseEntity.ok(ApiResponse.success("Messes fetched successfully", response));
     }
 
@@ -148,5 +168,27 @@ public class MessController {
             @PathVariable String id) {
         messService.rejectMess(id);
         return ResponseEntity.ok(ApiResponse.success("Mess rejected successfully", null));
+    }
+
+    // ==========================================
+    // HELPER METHODS
+    // ==========================================
+
+    private String resolveOwnerId(CustomUserDetails userDetails, Authentication authentication) {
+        if (userDetails != null && userDetails.getId() != null) {
+            return userDetails.getId();
+        }
+        if (authentication != null) {
+            if (authentication.getPrincipal() instanceof CustomUserDetails cud && cud.getId() != null) {
+                return cud.getId();
+            }
+            String email = authentication.getName();
+            if (email != null && !email.isBlank()) {
+                return userRepository.findByEmail(email.toLowerCase().trim())
+                        .map(User::getId)
+                        .orElseThrow(() -> new UnauthorizedMessAccessException("Owner user not found with email: " + email));
+            }
+        }
+        throw new UnauthorizedMessAccessException("Authentication required: owner is not authenticated");
     }
 }

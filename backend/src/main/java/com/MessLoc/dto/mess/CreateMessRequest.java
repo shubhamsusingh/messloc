@@ -1,5 +1,6 @@
 package com.MessLoc.dto.mess;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.MessLoc.enums.FoodType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -52,9 +53,11 @@ public class CreateMessRequest {
     private FoodType foodType;
 
     @NotNull(message = "Opening time is required")
+    @JsonFormat(pattern = "HH:mm[:ss]")
     private LocalTime openingTime;
 
     @NotNull(message = "Closing time is required")
+    @JsonFormat(pattern = "HH:mm[:ss]")
     private LocalTime closingTime;
 
     private List<String> facilities;
