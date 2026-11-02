@@ -62,6 +62,9 @@ class MessControllerTest {
     @MockitoBean
     private OwnerProfileRepository ownerProfileRepository;
 
+    @MockitoBean
+    private com.MessLoc.repository.MessRepository messRepository;
+
     @org.springframework.boot.test.context.TestConfiguration
     static class TestMongoConfig {
         @org.springframework.context.annotation.Bean(name = "mongoMappingContext")
@@ -89,8 +92,7 @@ class MessControllerTest {
         adminToken = "Bearer " + jwtService.generateToken(admin);
     }
 
-    @Test
-    void ownerCanCreateMess() throws Exception {
+    private CreateMessRequest createSampleRequest() {
         CreateMessRequest request = new CreateMessRequest();
         request.setName("Sharma Mess");
         request.setDescription("Good food");
@@ -106,6 +108,12 @@ class MessControllerTest {
         request.setOpeningTime(LocalTime.of(7, 30));
         request.setClosingTime(LocalTime.of(21, 30));
         request.setFacilities(List.of("WiFi"));
+        return request;
+    }
+
+    @Test
+    void ownerCanCreateMess() throws Exception {
+        CreateMessRequest request = createSampleRequest();
 
         MessResponse mockResponse = MessResponse.builder()
                 .id("m1")
@@ -127,6 +135,29 @@ class MessControllerTest {
     }
 
     @Test
+    void ownerCanCreateMessViaMessesEndpoint() throws Exception {
+        CreateMessRequest request = createSampleRequest();
+
+        MessResponse mockResponse = MessResponse.builder()
+                .id("m1")
+                .name("Sharma Mess")
+                .ownerId("o1")
+                .verificationStatus(VerificationStatus.PENDING)
+                .status(MessStatus.ACTIVE)
+                .build();
+
+        when(messService.createMess(any(CreateMessRequest.class), eq("o1"))).thenReturn(mockResponse);
+
+        mockMvc.perform(post("/api/messes")
+                        .header("Authorization", ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.name").value("Sharma Mess"));
+    }
+
+    @Test
     void userCannotCreateMess() throws Exception {
         CreateMessRequest request = new CreateMessRequest();
         mockMvc.perform(post("/api/owner/messes")
@@ -137,8 +168,123 @@ class MessControllerTest {
     }
 
     @Test
+    void ownerCanGetOwnerMesses() throws Exception {
+        MessResponse mockResponse = MessResponse.builder().id("m1").name("Sharma Mess").build();
+        when(messService.getOwnerMesses("o1")).thenReturn(List.of(mockResponse));
+
+        mockMvc.perform(get("/api/owner/messes")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].id").value("m1"));
+    }
+
+    @Test
+    void ownerCanGetOwnerMessById() throws Exception {
+        MessResponse mockResponse = MessResponse.builder().id("m1").name("Sharma Mess").build();
+        when(messService.getOwnerMess("m1", "o1")).thenReturn(mockResponse);
+
+        mockMvc.perform(get("/api/owner/messes/m1")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value("m1"));
+    }
+
+    @Test
+    void ownerCanUpdateMess() throws Exception {
+        UpdateMessRequest request = new UpdateMessRequest();
+        request.setName("Sharma Mess Updated");
+        request.setDescription("Great food");
+        request.setAddress("Street 2");
+        request.setCity("Dehradun");
+        request.setState("UK");
+        request.setPincode("248001");
+        request.setLatitude(30.3);
+        request.setLongitude(78.0);
+        request.setContactNumber("9876543210");
+        request.setMonthlyPrice(2800.0);
+        request.setFoodType(FoodType.VEG);
+        request.setOpeningTime(LocalTime.of(7, 30));
+        request.setClosingTime(LocalTime.of(22, 0));
+
+        MessResponse mockResponse = MessResponse.builder().id("m1").name("Sharma Mess Updated").build();
+        when(messService.updateMess(eq("m1"), any(UpdateMessRequest.class), eq("o1"))).thenReturn(mockResponse);
+
+        mockMvc.perform(put("/api/owner/messes/m1")
+                        .header("Authorization", ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.name").value("Sharma Mess Updated"));
+    }
+
+    @Test
+    void ownerCanDeleteMess() throws Exception {
+        mockMvc.perform(delete("/api/owner/messes/m1")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    void ownerCanActivateAndDeactivateMess() throws Exception {
+        mockMvc.perform(patch("/api/owner/messes/m1/activate")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(patch("/api/owner/messes/m1/deactivate")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    void publicCanGetMesses() throws Exception {
+        mockMvc.perform(get("/api/messes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    void publicCanGetPublicMessById() throws Exception {
+        com.MessLoc.dto.mess.PublicMessResponse mockResponse = com.MessLoc.dto.mess.PublicMessResponse.builder()
+                .id("m1")
+                .name("Sharma Mess")
+                .build();
+        when(messService.getPublicMess("m1")).thenReturn(mockResponse);
+
+        mockMvc.perform(get("/api/messes/m1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.name").value("Sharma Mess"));
+    }
+
+    @Test
+    void adminCanGetAllMessesAndPendingMesses() throws Exception {
+        mockMvc.perform(get("/api/admin/messes")
+                        .header("Authorization", adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        mockMvc.perform(get("/api/admin/messes/pending")
+                        .header("Authorization", adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
     void adminCanApproveMess() throws Exception {
         mockMvc.perform(patch("/api/admin/messes/m1/approve")
+                        .header("Authorization", adminToken))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void adminCanRejectMess() throws Exception {
+        mockMvc.perform(patch("/api/admin/messes/m1/reject")
                         .header("Authorization", adminToken))
                 .andExpect(status().isOk());
     }
@@ -148,11 +294,5 @@ class MessControllerTest {
         mockMvc.perform(patch("/api/admin/messes/m1/approve")
                         .header("Authorization", ownerToken))
                 .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void publicCanGetMesses() throws Exception {
-        mockMvc.perform(get("/api/messes"))
-                .andExpect(status().isOk());
     }
 }

@@ -43,6 +43,9 @@ class RoleAuthorizationTest {
     @MockitoBean
     private OwnerProfileRepository ownerProfileRepository;
 
+    @MockitoBean
+    private com.MessLoc.repository.MessRepository messRepository;
+
     @org.springframework.boot.test.context.TestConfiguration
     static class TestMongoConfig {
         @org.springframework.context.annotation.Bean(name = "mongoMappingContext")

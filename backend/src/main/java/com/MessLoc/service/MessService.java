@@ -20,6 +20,7 @@ public interface MessService {
 
     // PUBLIC Operations
     List<PublicMessResponse> getPublicMesses();
+    List<PublicMessResponse> getPublicMesses(String city);
     PublicMessResponse getPublicMess(String id);
 
     // ADMIN Operations
