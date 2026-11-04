@@ -46,5 +46,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
+    // Retrofit for API requests
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    // Convert JSON responses into Java objects
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    // ViewModel and LiveData
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.livedata)
 
 }
