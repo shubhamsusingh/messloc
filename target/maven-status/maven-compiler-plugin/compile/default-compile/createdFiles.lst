@@ -6,6 +6,7 @@ com/MessLoc/controller/MessController.class
 com/MessLoc/dto/request/OwnerSignupRequest.class
 com/MessLoc/entity/Mess.class
 com/MessLoc/controller/UserProfileController.class
+com/MessLoc/dto/mess/CreateMessRequest$CreateMessRequestBuilder.class
 com/MessLoc/enums/Role.class
 com/MessLoc/exception/MessNotFoundException.class
 com/MessLoc/dto/request/UserSignupRequest.class

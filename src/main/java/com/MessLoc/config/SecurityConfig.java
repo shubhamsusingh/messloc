@@ -79,8 +79,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/me").authenticated()
                         // Protected user profile endpoint (all authenticated roles)
                         .requestMatchers("/api/users/me").authenticated()
-                        // Public mess discovery endpoints
-                        .requestMatchers("/api/messes", "/api/messes/**").permitAll()
+                        // Public mess discovery endpoints (GET only)
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/messes", "/api/messes/**").permitAll()
+                        // Protected mess creation endpoint (OWNER role required)
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/messes").hasRole("OWNER")
 
                         // Role-specific protected endpoints
                         .requestMatchers("/api/user/**").hasRole("USER")

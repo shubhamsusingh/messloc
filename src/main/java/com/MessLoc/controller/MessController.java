@@ -28,11 +28,31 @@ public class MessController {
     // OWNER APIs
     // ==========================================
 
-    @PostMapping("/owner/messes")
+    @PostMapping({"/messes", "/owner/messes"})
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<MessResponse>> createMess(
             @Valid @RequestBody CreateMessRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        if (userDetails == null) {
+            org.springframework.security.core.Authentication auth =
+                    org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getPrincipal() instanceof CustomUserDetails cud) {
+                userDetails = cud;
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "Unauthorized: Full authentication is required"));
+            }
+        }
+
+        if (userDetails.getUser() != null) {
+            if (userDetails.getUser().getStatus() == com.MessLoc.enums.AccountStatus.PENDING) {
+                throw new com.MessLoc.exception.OwnerPendingException("Your account is pending admin approval. Please wait for verification.");
+            }
+            if (userDetails.getUser().getStatus() != com.MessLoc.enums.AccountStatus.ACTIVE) {
+                throw new com.MessLoc.exception.AccountInactiveException("Your account is currently inactive. Please contact MessLoc support.");
+            }
+        }
         
         MessResponse response = messService.createMess(request, userDetails.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
