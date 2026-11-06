@@ -1,5 +1,6 @@
 package com.MessLoc.service;
 
+import com.MessLoc.dto.request.UpdateUserProfileRequest;
 import com.MessLoc.dto.response.UserProfileResponse;
 
 /**
@@ -14,5 +15,15 @@ public interface UserService {
      * @return sanitized user profile response
      */
     UserProfileResponse getAuthenticatedUserProfile(String email);
+
+    /**
+     * Updates permitted profile fields of the currently authenticated user.
+     *
+     * @param email authenticated user's email (from SecurityContext)
+     * @param request update payload containing only permitted editable fields
+     * @return sanitized updated user profile response
+     */
+    UserProfileResponse updateAuthenticatedUserProfile(String email, UpdateUserProfileRequest request);
 }
+
 

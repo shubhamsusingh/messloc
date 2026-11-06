@@ -24,6 +24,7 @@ public class UserProfileResponse {
     private String name;
     private String email;
     private String phone;
+    private String city;
     private Role role;
     private AccountStatus accountStatus;
     private String profileImage;
@@ -41,6 +42,7 @@ public class UserProfileResponse {
                 .name(user.getName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
+                .city(user.getCity())
                 .role(user.getRole())
                 .accountStatus(user.getStatus())
                 .profileImage(user.getProfileImage())

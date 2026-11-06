@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.MessLoc.controller.AuthControllerTest
 -------------------------------------------------------------------------------
-Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.876 s -- in com.MessLoc.controller.AuthControllerTest
+Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.010 s -- in com.MessLoc.controller.AuthControllerTest

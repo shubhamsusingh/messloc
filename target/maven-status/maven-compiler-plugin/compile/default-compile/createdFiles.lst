@@ -1,4 +1,5 @@
 com/MessLoc/exception/AccountInactiveException.class
+com/MessLoc/dto/request/UpdateUserProfileRequest$UpdateUserProfileRequestBuilder.class
 com/MessLoc/dto/request/UserSignupRequest$UserSignupRequestBuilder.class
 com/MessLoc/security/JwtAuthenticationFilter.class
 com/MessLoc/controller/MessController.class
@@ -34,6 +35,7 @@ com/MessLoc/service/UserService.class
 com/MessLoc/exception/EmailAlreadyExistsException.class
 com/MessLoc/service/AuthService.class
 com/MessLoc/dto/response/UserProfileResponse$UserProfileResponseBuilder.class
+com/MessLoc/dto/request/UpdateUserProfileRequest.class
 com/MessLoc/dto/response/UserResponse$UserResponseBuilder.class
 com/MessLoc/entity/OwnerProfile.class
 com/MessLoc/controller/OwnerController.class

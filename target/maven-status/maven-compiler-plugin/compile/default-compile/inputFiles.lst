@@ -13,6 +13,7 @@
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/mess/UpdateMessRequest.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/request/OwnerSignupRequest.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/request/SigninRequest.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/request/UpdateUserProfileRequest.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/request/UserSignupRequest.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/response/ApiResponse.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/response/AuthResponse.java
