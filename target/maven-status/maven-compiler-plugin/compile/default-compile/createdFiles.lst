@@ -4,6 +4,7 @@ com/MessLoc/security/JwtAuthenticationFilter.class
 com/MessLoc/controller/MessController.class
 com/MessLoc/dto/request/OwnerSignupRequest.class
 com/MessLoc/entity/Mess.class
+com/MessLoc/controller/UserProfileController.class
 com/MessLoc/enums/Role.class
 com/MessLoc/exception/MessNotFoundException.class
 com/MessLoc/dto/request/UserSignupRequest.class
@@ -21,6 +22,7 @@ com/MessLoc/entity/OwnerProfile$OwnerProfileBuilder.class
 com/MessLoc/entity/Mess$MessBuilder.class
 com/MessLoc/entity/User.class
 com/MessLoc/dto/response/AuthResponse.class
+com/MessLoc/service/impl/UserServiceImpl.class
 com/MessLoc/dto/request/SigninRequest.class
 com/MessLoc/service/MessService.class
 com/MessLoc/dto/mess/PublicMessResponse$PublicMessResponseBuilder.class
@@ -28,8 +30,10 @@ com/MessLoc/dto/response/UserResponse.class
 com/MessLoc/repository/OwnerProfileRepository.class
 com/MessLoc/enums/VerificationStatus.class
 com/MessLoc/security/CustomUserDetails.class
+com/MessLoc/service/UserService.class
 com/MessLoc/exception/EmailAlreadyExistsException.class
 com/MessLoc/service/AuthService.class
+com/MessLoc/dto/response/UserProfileResponse$UserProfileResponseBuilder.class
 com/MessLoc/dto/response/UserResponse$UserResponseBuilder.class
 com/MessLoc/entity/OwnerProfile.class
 com/MessLoc/controller/OwnerController.class
@@ -53,6 +57,7 @@ com/MessLoc/security/JwtAuthenticationEntryPoint.class
 com/MessLoc/service/impl/MessServiceImpl.class
 com/MessLoc/dto/mess/PublicMessResponse.class
 com/MessLoc/exception/GlobalExceptionHandler.class
+com/MessLoc/dto/response/UserProfileResponse.class
 com/MessLoc/dto/request/OwnerSignupRequest$OwnerSignupRequestBuilder.class
 com/MessLoc/dto/mess/UpdateMessRequest.class
 com/MessLoc/dto/response/AuthResponse$AuthResponseBuilder.class

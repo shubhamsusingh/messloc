@@ -6,6 +6,7 @@
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/controller/MessController.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/controller/OwnerController.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/controller/UserController.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/controller/UserProfileController.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/mess/CreateMessRequest.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/mess/MessResponse.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/mess/PublicMessResponse.java
@@ -15,6 +16,7 @@
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/request/UserSignupRequest.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/response/ApiResponse.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/response/AuthResponse.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/response/UserProfileResponse.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/dto/response/UserResponse.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/entity/Mess.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/entity/OwnerProfile.java
@@ -45,5 +47,7 @@
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/security/JwtService.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/service/AuthService.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/service/MessService.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/service/UserService.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/service/impl/AuthServiceImpl.java
 /Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/service/impl/MessServiceImpl.java
+/Users/shivamkumar/Desktop/MessLock_01/messloc/src/main/java/com/MessLoc/service/impl/UserServiceImpl.java
