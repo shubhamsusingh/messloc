@@ -5,9 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.view.View"/>
         <variable
-            name="loginModel"
+            name="authViewModel"
             type="com.example.messloc.viewmodel.AuthViewModel" />
 
     </data>
@@ -18,7 +18,10 @@
     android:layout_height="match_parent"
     android:background="@color/on_primary"
     tools:context=".ui.auth.LoginActivity">
-
+    <include
+        android:id="@+id/loadingOverlay"
+        layout="@layout/view_loading_overlay"
+        android:visibility="@{authViewModel.loading ? View.VISIBLE : View.GONE}"/>
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -92,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
                     android:imeOptions="actionNext"
-                    android:text="@={loginModel.email}"
+                    android:text="@={authViewModel.email}"
                     android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -118,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
                     android:imeOptions="actionDone"
-                    android:text="@={loginModel.password}"
+                    android:text="@={authViewModel.password}"
                     android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -142,14 +145,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginBottom="20dp"
-                android:text="@string/login"
+                android:enabled="@{!authViewModel.loading}"
+                android:text="@{authViewModel.loading ? `Submitting...` : `Login`}"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/on_primary"
                 android:backgroundTint="@color/primary"
                 app:cornerRadius="12dp"
+                android:onClick="@{() -> authViewModel.login()}"
                 />
-               <!-- android:onClick="@{loginModel::onLoginBtn}"-->
+
 
             <!-- Register -->
             <LinearLayout

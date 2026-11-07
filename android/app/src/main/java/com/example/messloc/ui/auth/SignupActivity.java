@@ -2,48 +2,83 @@ package com.example.messloc.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.messloc.R;
 import com.example.messloc.databinding.ActivitySignupBinding;
+import com.example.messloc.ui.auth.LoginActivity;
 import com.example.messloc.viewmodel.AuthViewModel;
 
 public class SignupActivity extends AppCompatActivity {
-    private AuthViewModel viewModel;
+
+    private ActivitySignupBinding binding;
+    private AuthViewModel authViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-//        setContentView(R.layout.activity_signup);
 
-        ActivitySignupBinding binding =
-                ActivitySignupBinding.inflate(getLayoutInflater());
+        binding = DataBindingUtil.setContentView(
+                this,
+                R.layout.activity_signup
+        );
 
-        setContentView(binding.getRoot());
+        authViewModel = new ViewModelProvider(this)
+                .get(AuthViewModel.class);
 
-        viewModel = new AuthViewModel();
-        binding.setSignupModel(viewModel);
+        binding.setAuthViewModel(authViewModel);
         binding.setLifecycleOwner(this);
+        binding.emailEditText.addTextChangedListener(
+                new android.text.TextWatcher() {
 
-        binding.loginTextView.setOnClickListener(v -> {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
 
-            Intent intent =
-                    new Intent(SignupActivity.this, LoginActivity.class);
+                    @Override
+                    public void onTextChanged(
+                            CharSequence s, int start, int before, int count) {
 
-            startActivity(intent);
+                        binding.emailInputLayout.setError(null);
+                    }
 
+                    @Override
+                    public void afterTextChanged(
+                            android.text.Editable s) {}
+                }
+        );
+        observeViewModel();
+    }
+
+    private void observeViewModel() {
+
+        authViewModel.authResult.observe(this, response -> {
+
+            if (response != null && response.isSuccess()) {
+
+                Toast.makeText(
+                        this,
+                        response.getMessage(),
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                startActivity(
+                        new Intent(this, LoginActivity.class)
+                );
+
+                finish();
+            }
         });
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        authViewModel.errorMessage.observe(this, error -> {
+
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

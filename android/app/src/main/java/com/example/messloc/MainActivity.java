@@ -11,8 +11,11 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.splashscreen.SplashScreen;
 
 import com.example.messloc.ui.auth.LoginActivity;
+import com.example.messloc.utils.TokenManager;
 
 public class MainActivity extends AppCompatActivity {
+
+    private TokenManager tokenManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,14 +23,26 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        EdgeToEdge.enable(this);
+       // EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        tokenManager = new TokenManager(this);
 
-        Intent intent =
-                new Intent(this, LoginActivity.class);
+        if (tokenManager.hasValidSession()) {
 
-        startActivity(intent);
+            startActivity(new Intent(
+                    this,
+                    com.example.messloc.ui.main.MainActivity.class
+            ));
+
+        } else {
+
+            startActivity(new Intent(
+                    this,
+                    LoginActivity.class
+            ));
+        }
+
         finish();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

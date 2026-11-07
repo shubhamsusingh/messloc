@@ -5,9 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.view.View"/>
         <variable
-            name="signupModel"
+            name="authViewModel"
             type="com.example.messloc.viewmodel.AuthViewModel" />
 
     </data>
@@ -18,6 +18,8 @@
         android:layout_height="match_parent"
         android:background="@color/on_primary"
         tools:context=".ui.auth.SignupActivity">
+
+
 
         <ScrollView
             android:layout_width="0dp"
@@ -91,7 +93,7 @@
                         android:inputType="textPersonName"
                         android:imeOptions="actionNext"
                         android:singleLine="true"
-                        android:text="@={signupModel.name}" />
+                        android:text="@={authViewModel.name}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -116,10 +118,34 @@
                         android:inputType="textEmailAddress"
                         android:imeOptions="actionNext"
                         android:singleLine="true"
-                        android:text="@={signupModel.email}" />
+                        android:text="@={authViewModel.email}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Phone -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/phoneInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Phone"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:startIconDrawable="@drawable/mail">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/phoneEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:imeOptions="actionNext"
+                        android:singleLine="true"
+                        android:text="@={authViewModel.phone}" />
+
+                </com.google.android.material.textfield.TextInputLayout>
                 <!-- Password -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/passwordInputLayout"
@@ -142,7 +168,7 @@
                         android:inputType="textPassword"
                         android:imeOptions="actionNext"
                         android:singleLine="true"
-                        android:text="@={signupModel.password}" />
+                        android:text="@={authViewModel.password}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -168,7 +194,7 @@
                         android:inputType="textPassword"
                         android:imeOptions="actionDone"
                         android:singleLine="true"
-                        android:text="@={signupModel.confirmPassword}" />
+                        android:text="@={authViewModel.confirmPassword}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -178,9 +204,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginBottom="20dp"
-                    android:onClick="@{signupModel::onSignupBtn}"
-                    android:text="Create Account"
+                    android:onClick="@{() -> authViewModel.register()}"
+                    android:text="@{authViewModel.loading ? `Submitting...` : `Sign Up`}"
                     android:textSize="16sp"
+                    android:enabled="@{!authViewModel.loading}"
                     android:textStyle="bold"
                     android:backgroundTint="@color/primary"
                     app:cornerRadius="12dp" />
@@ -214,7 +241,10 @@
             </LinearLayout>
 
         </ScrollView>
-
+        <include
+            android:id="@+id/loadingOverlay"
+            layout="@layout/view_loading_overlay"
+            android:visibility="@{authViewModel.loading ? View.VISIBLE : View.GONE}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
