@@ -18,5 +18,7 @@ public interface MessRepository extends MongoRepository<Mess, String> {
 
     List<Mess> findByVerificationStatusAndStatus(VerificationStatus verificationStatus, MessStatus status);
 
+    List<Mess> findByVerificationStatusAndStatusAndCityIgnoreCase(VerificationStatus verificationStatus, MessStatus status, String city);
+
     List<Mess> findByVerificationStatus(VerificationStatus verificationStatus);
 }

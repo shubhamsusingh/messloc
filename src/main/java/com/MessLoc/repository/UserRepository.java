@@ -37,4 +37,6 @@ public interface UserRepository extends MongoRepository<User, String> {
      * @return true if at least one user with the role exists
      */
     boolean existsByRole(Role role);
+
+    java.util.List<User> findByRoleAndStatus(Role role, com.MessLoc.enums.AccountStatus status);
 }

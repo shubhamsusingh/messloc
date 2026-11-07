@@ -135,8 +135,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex) {
         log.warn("Malformed JSON request or invalid input data: {}", ex.getMessage());
+        String message = "Invalid request body or field format. Please check your input data.";
+        if (ex.getCause() != null && ex.getCause().getMessage() != null) {
+            String causeMsg = ex.getCause().getMessage();
+            if (causeMsg.contains("problem:")) {
+                message = causeMsg.substring(causeMsg.indexOf("problem:") + 8).trim();
+            } else if (causeMsg.contains(":")) {
+                message = causeMsg.substring(causeMsg.indexOf(":") + 1).trim();
+            }
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Invalid request body or field format. Please check your input data."));
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
+    }
+
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatch(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex) {
+        log.warn("Parameter type mismatch: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Invalid value for parameter '" + ex.getName() + "'"));
     }
 
     @ExceptionHandler(Exception.class)

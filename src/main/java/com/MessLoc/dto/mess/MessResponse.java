@@ -26,7 +26,9 @@ public class MessResponse {
     private String contactNumber;
     private Double monthlyPrice;
     private FoodType foodType;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
     private LocalTime openingTime;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "HH:mm")
     private LocalTime closingTime;
     private List<String> facilities;
     private VerificationStatus verificationStatus;

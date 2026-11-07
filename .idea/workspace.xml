@@ -5,40 +5,358 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7650427c-1823-4f34-b587-1f15815198ef" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.MD" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/AndroidProjectSystem.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/deploymentTargetSelector.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/deviceManager.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/runConfigurations.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/androidTest/java/com/example/messloc/ExampleInstrumentedTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/ic_launcher-playstore.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/MainActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/api/ApiClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/api/AuthApiService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/api/MessApiService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/model/AuthResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/model/LoginRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/model/Mess.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/model/MessListResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/model/RegisterRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/model/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/repository/AuthRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/data/repository/MessRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/model/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/auth/AuthRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/auth/LoginActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/auth/SignupActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/home/HomeActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/home/HomeFragment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/home/HomeViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/home/MessAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/main/MainActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/ui/profile/ProfileFragment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/utils/TokenManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/viewmodel/AuthViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/java/com/example/messloc/viewmodel/HomeViewModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/keepRules/rules.keep" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/color/nav_icon_tint.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/color/nav_text_tint.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/color/primary_tint.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/badge_banner_bg.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/badge_verified_bg.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/banner1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_badge_veg.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_bottom_navigation.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_btn_primary_pill.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_card_surface.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_category.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_category_selected.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_chip_soft.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_icon_button.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_image_placeholder.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_indicator_active.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_indicator_inactive.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_loading_card.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_mess_card.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_notif_dot.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/bg_search_bar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/btn_banner_explore.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/card1img.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/card2img.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/card3img.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/home_banner_bg.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_dropdown_arrow.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_empty_mess.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_explore.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_heart_outline.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_home.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_home_bell.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_launcher_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_launcher_foreground.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_launcher_monochrome.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_location.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_mess_placeholder.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_notification.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile_arrow.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile_camera.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile_edit.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile_email.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile_location.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile_logout.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile_person.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_profile_phone.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_search.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_star_filled.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_subscriptions.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_time.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/ic_veg_mark.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/img.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/l_logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/large_logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/m_logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/mail.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/padlock.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/person.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_avatar_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_camera_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_card_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_edit_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_edit_icon_bg.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_icon_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_logout_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_logout_icon_bg.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/profile_role_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/drawable/s_logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/font/poppins.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/font/poppins_bold.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/font/poppins_italic.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/font/poppins_medium.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/font/poppins_regular.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/font/poppins_semibold.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/activity_home.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/activity_login.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/activity_main_home.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/activity_signup.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/fragment_home.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/fragment_profile.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/item_facility_chip.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/item_mess.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/layout/view_loading_overlay.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/menu/bottom_nav_menu.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-anydpi/ic_launcher.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values-night/colors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values-night/themes.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values/ic_launcher_background.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values/styles.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/values/themes.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/xml/backup_rules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/main/res/xml/data_extraction_rules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/app/src/test/java/com/example/messloc/ExampleUnitTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradle.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradle/gradle-daemon-jvm.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradle/libs.versions.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/settings.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.dockerignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/controller/AdminController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/enums/AccountStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/enums/FoodType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/enums/MessStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/enums/VerificationStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/exception/AccountBlockedException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/initializer/AdminInitializer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readMe.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/readMe.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/MessLocApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/MessLocApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/config/MongoConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/config/MongoConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/controller/MessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/controller/MessController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/controller/OwnerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/controller/OwnerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/mess/CreateMessRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/mess/CreateMessRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/mess/MessResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/mess/MessResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/mess/PublicMessResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/mess/PublicMessResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/mess/UpdateMessRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/mess/UpdateMessRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/request/OwnerSignupRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/request/OwnerSignupRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/request/SigninRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/request/SigninRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/request/UserSignupRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/request/UserSignupRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/response/ApiResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/response/ApiResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/response/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/response/AuthResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/response/UserResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/dto/response/UserResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/entity/Mess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/entity/Mess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/entity/OwnerProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/entity/OwnerProfile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/enums/AccountStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/enums/AccountStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/enums/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/enums/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/AccountBlockedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/AccountBlockedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/AccountInactiveException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/AccountInactiveException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/EmailAlreadyExistsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/EmailAlreadyExistsException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/InvalidCredentialsException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/InvalidCredentialsException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/MessNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/MessNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/OwnerPendingException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/OwnerPendingException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/ResourceNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/ResourceNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/UnauthorizedMessAccessException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/exception/UnauthorizedMessAccessException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/initializer/AdminInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/initializer/AdminInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/repository/MessRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/repository/MessRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/repository/OwnerProfileRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/repository/OwnerProfileRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/CustomUserDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/CustomUserDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/CustomUserDetailsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/CustomUserDetailsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/JwtAccessDeniedHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/JwtAccessDeniedHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/JwtAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/JwtAuthenticationEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/security/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/service/MessService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/service/MessService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/service/impl/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/service/impl/MessServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/main/java/com/MessLoc/service/impl/MessServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/test/java/com/MessLoc/MessLocApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/test/java/com/MessLoc/MessLocApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/test/java/com/MessLoc/controller/RoleAuthorizationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/test/java/com/MessLoc/controller/RoleAuthorizationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src copy/test/java/com/MessLoc/service/AuthServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src copy/test/java/com/MessLoc/service/AuthServiceTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/controller/MessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/controller/MessController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/CreateMessRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/CreateMessRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/MessResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/MessResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/PublicMessResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/PublicMessResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/UpdateMessRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/UpdateMessRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/entity/Mess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/entity/Mess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/enums/FoodType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/enums/FoodType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/enums/MessStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/enums/MessStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/enums/VerificationStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/enums/VerificationStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/exception/AccountInactiveException.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/repository/MessRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/repository/MessRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/service/MessService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/service/MessService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/service/impl/MessServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/service/impl/MessServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/MessLoc/controller/MessControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/MessLoc/controller/MessControllerTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/MessLoc/config/SecurityConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/controller/MessController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/MessLoc/controller/MessController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/CreateMessRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/CreateMessRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/GlobalExceptionHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/service/impl/MessServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/MessLoc/service/impl/MessServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.MessLocApplicationTests.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.MessLocApplicationTests.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.AuthControllerTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.AuthControllerTest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.MessControllerTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.MessControllerTest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.RoleAuthorizationTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.RoleAuthorizationTest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.UserProfileControllerTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.UserProfileControllerTest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.security.JwtServiceTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.security.JwtServiceTest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.service.AuthServiceTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.service.AuthServiceTest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.service.UserServiceTest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.service.UserServiceTest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.MessLocApplicationTests.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.MessLocApplicationTests.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.AuthControllerTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.AuthControllerTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.MessControllerTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.MessControllerTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.RoleAuthorizationTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.RoleAuthorizationTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.UserProfileControllerTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.UserProfileControllerTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.security.JwtServiceTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.security.JwtServiceTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.service.AuthServiceTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.service.AuthServiceTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.service.UserServiceTest.txt" beforeDir="false" afterPath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.service.UserServiceTest.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/MessControllerTest$TestMongoConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/MessControllerTest$TestMongoConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/MessControllerTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/MessControllerTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/MessLocApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/config/MongoConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/config/SecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/controller/AdminController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/controller/AuthController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/controller/MessController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/controller/OwnerController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/controller/UserController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/controller/UserProfileController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/CreateMessRequest$CreateMessRequestBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/CreateMessRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/MessResponse$MessResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/MessResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/PublicMessResponse$PublicMessResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/PublicMessResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/mess/UpdateMessRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/request/OwnerSignupRequest$OwnerSignupRequestBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/request/OwnerSignupRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/request/SigninRequest$SigninRequestBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/request/SigninRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/request/UpdateUserProfileRequest$UpdateUserProfileRequestBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/request/UpdateUserProfileRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/request/UserSignupRequest$UserSignupRequestBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/request/UserSignupRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/response/ApiResponse$ApiResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/response/ApiResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/response/AuthResponse$AuthResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/response/AuthResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/response/UserProfileResponse$UserProfileResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/response/UserProfileResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/response/UserResponse$UserResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/dto/response/UserResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/entity/Mess$MessBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/entity/Mess.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/entity/OwnerProfile$OwnerProfileBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/entity/OwnerProfile.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/entity/User$UserBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/entity/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/enums/AccountStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/enums/FoodType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/enums/MessStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/enums/Role.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/enums/VerificationStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/AccountBlockedException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/AccountInactiveException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/EmailAlreadyExistsException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/GlobalExceptionHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/InvalidCredentialsException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/MessNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/OwnerPendingException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/ResourceNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/exception/UnauthorizedMessAccessException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/initializer/AdminInitializer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/repository/MessRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/repository/OwnerProfileRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/repository/UserRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/security/CustomUserDetails.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/security/CustomUserDetailsService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/security/JwtAccessDeniedHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/security/JwtAuthenticationEntryPoint.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/security/JwtAuthenticationFilter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/security/JwtService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/service/AuthService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/service/MessService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/service/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/service/impl/AuthServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/service/impl/MessServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/MessLoc/service/impl/UserServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.MessLocApplicationTests.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.AuthControllerTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.MessControllerTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.RoleAuthorizationTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.controller.UserProfileControllerTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.security.JwtServiceTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.service.AuthServiceTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.service.MessServiceTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-com.MessLoc.service.UserServiceTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.MessLocApplicationTests.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.AuthControllerTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.MessControllerTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.RoleAuthorizationTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.controller.UserProfileControllerTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.security.JwtServiceTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.service.AuthServiceTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.service.MessServiceTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/surefire-reports/com.MessLoc.service.UserServiceTest.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/MessLocApplicationTests$TestMongoConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/MessLocApplicationTests.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/AuthControllerTest$TestMongoConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/AuthControllerTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/MessControllerTest$TestMongoConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/MessControllerTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/RoleAuthorizationTest$TestMongoConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/RoleAuthorizationTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/UserProfileControllerTest$TestMongoConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/controller/UserProfileControllerTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/security/JwtServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/service/AuthServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/service/MessServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/MessLoc/service/UserServiceTest.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +380,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/shivam",
+    "git-widget-placeholder": "Merging feature/shivam",
     "last_opened_file_path": "/Users/shivamkumar/Desktop/MessLock_01/messloc"
   }
 }]]></component>

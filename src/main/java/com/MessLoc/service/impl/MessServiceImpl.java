@@ -22,6 +22,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,21 +99,26 @@ public class MessServiceImpl implements MessService {
         validateCoordinates(request.getLatitude(), request.getLongitude());
         validateTime(request.getOpeningTime(), request.getClosingTime());
 
-        mess.setName(request.getName());
-        mess.setDescription(request.getDescription());
-        mess.setAddress(request.getAddress());
-        mess.setCity(request.getCity());
-        mess.setState(request.getState());
-        mess.setPincode(request.getPincode());
+        mess.setName(request.getName().trim());
+        mess.setDescription(request.getDescription().trim());
+        mess.setAddress(request.getAddress().trim());
+        mess.setCity(request.getCity().trim());
+        mess.setState(request.getState().trim());
+        mess.setPincode(request.getPincode().trim());
         mess.setLatitude(request.getLatitude());
         mess.setLongitude(request.getLongitude());
-        mess.setContactNumber(request.getContactNumber());
+        mess.setContactNumber(request.getContactNumber().trim());
         mess.setMonthlyPrice(request.getMonthlyPrice());
         mess.setFoodType(request.getFoodType());
         mess.setOpeningTime(request.getOpeningTime());
         mess.setClosingTime(request.getClosingTime());
-        mess.setFacilities(request.getFacilities() != null ? request.getFacilities() : List.of());
-        mess.setStatus(request.getStatus());
+        if (request.getFacilities() != null) {
+            mess.setFacilities(request.getFacilities());
+        }
+        if (request.getStatus() != null) {
+            mess.setStatus(request.getStatus());
+        }
+        mess.setUpdatedAt(Instant.now());
 
         Mess updatedMess = messRepository.save(mess);
         return mapToResponse(updatedMess);
@@ -122,6 +128,7 @@ public class MessServiceImpl implements MessService {
     public void deactivateMess(String id, String ownerId) {
         Mess mess = getMessOwnedByOwner(id, ownerId);
         mess.setStatus(MessStatus.INACTIVE);
+        mess.setUpdatedAt(Instant.now());
         messRepository.save(mess);
     }
 
@@ -129,19 +136,32 @@ public class MessServiceImpl implements MessService {
     public void activateMess(String id, String ownerId) {
         Mess mess = getMessOwnedByOwner(id, ownerId);
         mess.setStatus(MessStatus.ACTIVE);
+        mess.setUpdatedAt(Instant.now());
         messRepository.save(mess);
     }
 
     @Override
     public void deleteMess(String id, String ownerId) {
-        // Soft delete
-        deactivateMess(id, ownerId);
+        Mess mess = getMessOwnedByOwner(id, ownerId);
+        messRepository.delete(mess);
     }
 
     @Override
     public List<PublicMessResponse> getPublicMesses() {
-        return messRepository.findByVerificationStatusAndStatus(VerificationStatus.APPROVED, MessStatus.ACTIVE)
-                .stream()
+        return getPublicMesses(null);
+    }
+
+    @Override
+    public List<PublicMessResponse> getPublicMesses(String city) {
+        List<Mess> messes;
+        if (city != null && !city.trim().isEmpty()) {
+            messes = messRepository.findByVerificationStatusAndStatusAndCityIgnoreCase(
+                    VerificationStatus.APPROVED, MessStatus.ACTIVE, city.trim());
+        } else {
+            messes = messRepository.findByVerificationStatusAndStatus(
+                    VerificationStatus.APPROVED, MessStatus.ACTIVE);
+        }
+        return messes.stream()
                 .map(this::mapToPublicResponse)
                 .collect(Collectors.toList());
     }
@@ -152,7 +172,7 @@ public class MessServiceImpl implements MessService {
                 .orElseThrow(() -> new MessNotFoundException("Mess not found with id: " + id));
 
         if (mess.getVerificationStatus() != VerificationStatus.APPROVED || mess.getStatus() != MessStatus.ACTIVE) {
-            throw new MessNotFoundException("Mess is not publicly available");
+            throw new MessNotFoundException("Mess is not publicly available or pending verification");
         }
 
         return mapToPublicResponse(mess);
@@ -177,6 +197,7 @@ public class MessServiceImpl implements MessService {
         Mess mess = messRepository.findById(id)
                 .orElseThrow(() -> new MessNotFoundException("Mess not found with id: " + id));
         mess.setVerificationStatus(VerificationStatus.APPROVED);
+        mess.setUpdatedAt(Instant.now());
         messRepository.save(mess);
     }
 
@@ -185,6 +206,7 @@ public class MessServiceImpl implements MessService {
         Mess mess = messRepository.findById(id)
                 .orElseThrow(() -> new MessNotFoundException("Mess not found with id: " + id));
         mess.setVerificationStatus(VerificationStatus.REJECTED);
+        mess.setUpdatedAt(Instant.now());
         messRepository.save(mess);
     }
 
@@ -200,20 +222,22 @@ public class MessServiceImpl implements MessService {
     }
 
     private void validateCoordinates(Double latitude, Double longitude) {
-        if (latitude < -90 || latitude > 90) {
+        if (latitude != null && (latitude < -90 || latitude > 90)) {
             throw new IllegalArgumentException("Latitude must be between -90 and 90");
         }
-        if (longitude < -180 || longitude > 180) {
+        if (longitude != null && (longitude < -180 || longitude > 180)) {
             throw new IllegalArgumentException("Longitude must be between -180 and 180");
         }
     }
 
-    private void validateTime(java.time.LocalTime openingTime, java.time.LocalTime closingTime) {
-        // Only validate if assumed same day
-        // For now, if openingTime >= closingTime, we throw
-        // This is assuming same-day opening/closing
-        if (openingTime != null && closingTime != null && !openingTime.isBefore(closingTime)) {
-            throw new IllegalArgumentException("Opening time must be before closing time");
+    private void validateTime(LocalTime openingTime, LocalTime closingTime) {
+        if (openingTime != null && closingTime != null) {
+            if (openingTime.equals(closingTime)) {
+                throw new IllegalArgumentException("Opening time and closing time cannot be the exact same time");
+            }
+            if (openingTime.isAfter(closingTime)) {
+                throw new IllegalArgumentException("Opening time must be before closing time");
+            }
         }
     }
 
