@@ -74,9 +74,16 @@ public class SecurityConfig {
                 // Authorization route matching
                 .authorizeHttpRequests(auth -> auth
                         // Public auth endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
-                        // Public mess endpoints (GET only is public)
+                        // Public auth endpoints
+                        .requestMatchers("/api/auth/signup/user", "/api/auth/signup/owner", "/api/auth/signin").permitAll()
+                        // Protected auth endpoints (current authenticated account)
+                        .requestMatchers("/api/auth/me").authenticated()
+                        // Protected user profile endpoint (all authenticated roles)
+                        .requestMatchers("/api/users/me").authenticated()
+                        // Public mess discovery endpoints (GET only)
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/messes", "/api/messes/**").permitAll()
+                        // Protected mess creation endpoint (OWNER role required)
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/messes").hasRole("OWNER")
 
                         // Role-specific protected endpoints
                         .requestMatchers("/api/user/**").hasRole("USER")

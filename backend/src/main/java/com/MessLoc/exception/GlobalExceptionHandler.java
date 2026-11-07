@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -117,6 +118,13 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        log.warn("Method not allowed: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(ApiResponse.error(HttpStatus.METHOD_NOT_ALLOWED.value(), ex.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("Illegal argument: {}", ex.getMessage());
@@ -126,17 +134,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex) {
-        log.warn("Malformed JSON request body: {}", ex.getMessage());
-        String message = "Malformed JSON request or invalid parameter value.";
+        log.warn("Malformed JSON request or invalid input data: {}", ex.getMessage());
+        String message = "Invalid request body or field format. Please check your input data.";
         if (ex.getCause() != null && ex.getCause().getMessage() != null) {
             String causeMsg = ex.getCause().getMessage();
-            // Simplify error message if possible
             if (causeMsg.contains("problem:")) {
                 message = causeMsg.substring(causeMsg.indexOf("problem:") + 8).trim();
             } else if (causeMsg.contains(":")) {
                 message = causeMsg.substring(causeMsg.indexOf(":") + 1).trim();
-            } else {
-                message = causeMsg;
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

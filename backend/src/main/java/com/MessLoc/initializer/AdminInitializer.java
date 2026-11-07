@@ -20,16 +20,16 @@ public class AdminInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${messmate.admin.email}")
+    @Value("${messloc.admin.email:${messmate.admin.email:admin@messloc.com}}")
     private String adminEmail;
 
-    @Value("${messmate.admin.password}")
+    @Value("${messloc.admin.password:${messmate.admin.password:Admin@MessLoc123}}")
     private String adminPassword;
 
-    @Value("${messmate.admin.name}")
+    @Value("${messloc.admin.name:${messmate.admin.name:MessLoc Administrator}}")
     private String adminName;
 
-    @Value("${messmate.admin.phone}")
+    @Value("${messloc.admin.phone:${messmate.admin.phone:9999999999}}")
     private String adminPhone;
 
     public AdminInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
@@ -54,12 +54,12 @@ public class AdminInitializer implements CommandLineRunner {
 
                 userRepository.save(admin);
                 log.info("==========================================================");
-                log.info("MessMate: Initial ADMIN account successfully seeded!");
+                log.info("MessLoc: Initial ADMIN account successfully seeded!");
                 log.info("Email: {}", normalizedEmail);
                 log.info("Role: ADMIN | Status: ACTIVE");
                 log.info("==========================================================");
             } else {
-                log.info("MessMate: An ADMIN account already exists in database. Skipping seed.");
+                log.info("MessLoc: An ADMIN account already exists in database. Skipping seed.");
             }
         } catch (Exception ex) {
             log.warn("AdminInitializer encountered an issue during startup (e.g. database not reachable yet): {}", ex.getMessage());

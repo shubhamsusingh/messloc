@@ -148,4 +148,36 @@ class RoleAuthorizationTest {
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.status").value(403));
     }
+
+    @Test
+    void testAdminEndpoint_WithOwnerToken_403() throws Exception {
+        mockMvc.perform(get("/api/admin/test").header("Authorization", ownerToken))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(403));
+    }
+
+    @Test
+    void testOwnerEndpoint_WithAdminToken_403() throws Exception {
+        mockMvc.perform(get("/api/owner/test").header("Authorization", adminToken))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(403));
+    }
+
+    @Test
+    void testUnauthenticated_OwnerEndpoint_401() throws Exception {
+        mockMvc.perform(get("/api/owner/test"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(401));
+    }
+
+    @Test
+    void testUnauthenticated_AdminEndpoint_401() throws Exception {
+        mockMvc.perform(get("/api/admin/test"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(401));
+    }
 }

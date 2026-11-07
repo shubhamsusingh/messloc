@@ -39,6 +39,8 @@ public class User {
 
     private String phone;
 
+    private String city;
+
     private Role role;
 
     private AccountStatus status;

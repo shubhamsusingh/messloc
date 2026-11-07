@@ -5,13 +5,20 @@ import com.MessLoc.dto.mess.MessResponse;
 import com.MessLoc.dto.mess.PublicMessResponse;
 import com.MessLoc.dto.mess.UpdateMessRequest;
 import com.MessLoc.entity.Mess;
+import com.MessLoc.entity.User;
+import com.MessLoc.enums.AccountStatus;
 import com.MessLoc.enums.MessStatus;
+import com.MessLoc.enums.Role;
 import com.MessLoc.enums.VerificationStatus;
+import com.MessLoc.exception.AccountInactiveException;
 import com.MessLoc.exception.MessNotFoundException;
+import com.MessLoc.exception.OwnerPendingException;
 import com.MessLoc.exception.UnauthorizedMessAccessException;
 import com.MessLoc.repository.MessRepository;
+import com.MessLoc.repository.UserRepository;
 import com.MessLoc.service.MessService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,9 +31,24 @@ import java.util.stream.Collectors;
 public class MessServiceImpl implements MessService {
 
     private final MessRepository messRepository;
+    private final UserRepository userRepository;
 
     @Override
     public MessResponse createMess(CreateMessRequest request, String ownerId) {
+        if (ownerId != null) {
+            userRepository.findById(ownerId).ifPresent(owner -> {
+                if (owner.getRole() != Role.OWNER) {
+                    throw new AccessDeniedException("Only OWNER accounts can create mess listings");
+                }
+                if (owner.getStatus() == AccountStatus.PENDING) {
+                    throw new OwnerPendingException("Your account is pending admin approval. Please wait for verification.");
+                }
+                if (owner.getStatus() != AccountStatus.ACTIVE) {
+                    throw new AccountInactiveException("Your account is currently inactive. Please contact MessLoc support.");
+                }
+            });
+        }
+
         validateCoordinates(request.getLatitude(), request.getLongitude());
         validateTime(request.getOpeningTime(), request.getClosingTime());
 
@@ -209,8 +231,13 @@ public class MessServiceImpl implements MessService {
     }
 
     private void validateTime(LocalTime openingTime, LocalTime closingTime) {
-        if (openingTime != null && closingTime != null && openingTime.equals(closingTime)) {
-            throw new IllegalArgumentException("Opening time and closing time cannot be the exact same time");
+        if (openingTime != null && closingTime != null) {
+            if (openingTime.equals(closingTime)) {
+                throw new IllegalArgumentException("Opening time and closing time cannot be the exact same time");
+            }
+            if (openingTime.isAfter(closingTime)) {
+                throw new IllegalArgumentException("Opening time must be before closing time");
+            }
         }
     }
 
