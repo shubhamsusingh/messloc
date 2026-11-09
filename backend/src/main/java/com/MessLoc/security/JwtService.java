@@ -31,11 +31,14 @@ public class JwtService {
 
     private static final Logger log = LoggerFactory.getLogger(JwtService.class);
 
-    @Value("${messmate.jwt.secret}")
+    @Value("${messloc.jwt.secret:${messmate.jwt.secret}}")
     private String secretKey;
 
-    @Value("${messmate.jwt.expiration-ms}")
+    @Value("${messloc.jwt.expiration-ms:${messmate.jwt.expiration-ms}}")
     private long jwtExpirationMs;
+
+    @Value("${messloc.jwt.issuer:${messmate.jwt.issuer:MessLoc}}")
+    private String jwtIssuer;
 
     /**
      * Derives a cryptographic SecretKey from the configured secret string.
@@ -78,13 +81,25 @@ public class JwtService {
      */
     private String buildToken(Map<String, Object> extraClaims, String subject, long expirationMs) {
         long now = System.currentTimeMillis();
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .claims(extraClaims)
                 .subject(subject)
                 .issuedAt(new Date(now))
                 .expiration(new Date(now + expirationMs))
-                .signWith(getSigningKey())
-                .compact();
+                .signWith(getSigningKey());
+
+        if (jwtIssuer != null && !jwtIssuer.isBlank()) {
+            builder.issuer(jwtIssuer);
+        }
+
+        return builder.compact();
+    }
+
+    /**
+     * Extracts the issuer claim from the token.
+     */
+    public String extractIssuer(String token) {
+        return extractClaim(token, Claims::getIssuer);
     }
 
     /**
@@ -140,7 +155,14 @@ public class JwtService {
      */
     public boolean validateToken(String token) {
         try {
-            extractAllClaims(token);
+            Claims claims = extractAllClaims(token);
+            if (jwtIssuer != null && !jwtIssuer.isBlank()) {
+                String tokenIssuer = claims.getIssuer();
+                if (tokenIssuer != null && !jwtIssuer.equals(tokenIssuer)) {
+                    log.warn("Invalid JWT issuer: expected '{}' but found '{}'", jwtIssuer, tokenIssuer);
+                    return false;
+                }
+            }
             return !isTokenExpired(token);
         } catch (SecurityException ex) {
             log.warn("Invalid JWT signature: {}", ex.getMessage());
@@ -162,8 +184,12 @@ public class JwtService {
      * Checks if the token expiration date is before the current time.
      */
     public boolean isTokenExpired(String token) {
-        Date expiration = extractClaim(token, Claims::getExpiration);
-        return expiration.before(new Date());
+        try {
+            Date expiration = extractClaim(token, Claims::getExpiration);
+            return expiration.before(new Date());
+        } catch (ExpiredJwtException ex) {
+            return true;
+        }
     }
 
     /**

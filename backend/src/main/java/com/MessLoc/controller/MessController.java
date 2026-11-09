@@ -33,13 +33,26 @@ public class MessController {
     // OWNER APIs
     // ==========================================
 
-    @PostMapping({"/owner/messes", "/messes"})
+    @PostMapping({"/messes", "/owner/messes"})
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<MessResponse>> createMess(
             @Valid @RequestBody CreateMessRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails,
             Authentication authentication) {
-        
+
+        if (userDetails == null && authentication != null && authentication.getPrincipal() instanceof CustomUserDetails cud) {
+            userDetails = cud;
+        }
+
+        if (userDetails != null && userDetails.getUser() != null) {
+            if (userDetails.getUser().getStatus() == com.MessLoc.enums.AccountStatus.PENDING) {
+                throw new com.MessLoc.exception.OwnerPendingException("Your account is pending admin approval. Please wait for verification.");
+            }
+            if (userDetails.getUser().getStatus() != com.MessLoc.enums.AccountStatus.ACTIVE) {
+                throw new com.MessLoc.exception.AccountInactiveException("Your account is currently inactive. Please contact MessLoc support.");
+            }
+        }
+
         String ownerId = resolveOwnerId(userDetails, authentication);
         MessResponse response = messService.createMess(request, ownerId);
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                    if (jwtService.isTokenValid(jwt, userDetails)) {
+                    if (jwtService.isTokenValid(jwt, userDetails) && userDetails.isEnabled() && userDetails.isAccountNonLocked()) {
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
@@ -65,6 +65,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                         log.debug("Successfully authenticated '{}' with authorities {}", userEmail, userDetails.getAuthorities());
+                    } else if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked()) {
+                        log.warn("Rejected token for inactive or blocked user '{}'", userEmail);
                     }
                 }
             }
