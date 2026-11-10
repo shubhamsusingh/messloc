@@ -1,0 +1,1132 @@
+{
+  "info": {
+    "_postman_id": "c1f7b8a2-messloc-4e91-8a21-90eb3e09170f",
+    "name": "MessLoc API Collection",
+    "description": "Complete, production-tested Postman collection for MessLoc \u2013 Mess Discovery & Management System. Supports Java 21 / Spring Boot 3.4+ backend with Spring Security and JWT authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "userToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ownerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "messId",
+      "value": "mess-seed-1",
+      "type": "string"
+    },
+    {
+      "key": "ownerUserId",
+      "value": "user-owner-1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication & Security",
+      "item": [
+        {
+          "name": "Signup Customer (USER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"userToken\", jsonData.token);",
+                  "    console.log(\"Saved userToken from customer registration\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aman Verma\",\n  \"email\": \"aman.verma@example.com\",\n  \"password\": \"Password@123\",\n  \"phone\": \"9876543210\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signup",
+                "user"
+              ]
+            },
+            "description": "Public customer signup. Server automatically assigns Role.USER and AccountStatus.ACTIVE, and issues a 24-hr JWT."
+          }
+        },
+        {
+          "name": "Signup Mess Owner (OWNER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.user && jsonData.user.id) {",
+                  "    pm.collectionVariables.set(\"ownerUserId\", jsonData.user.id);",
+                  "    console.log(\"Saved ownerUserId for admin verification: \" + jsonData.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Karan Joshi\",\n  \"email\": \"karan.owner@example.com\",\n  \"password\": \"OwnerPass@123\",\n  \"phone\": \"9812345678\",\n  \"businessName\": \"Karan Bhojnalaya & Tiffin Service\",\n  \"businessDescription\": \"Authentic North Indian thali, wholesome tiffin packages, and hygienic home-style meal service for students.\",\n  \"businessAddress\": \"Plot 12, Clock Tower, Rajpur Road, Dehradun\",\n  \"fssaiLicenseNumber\": \"12345678901234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup/owner",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signup",
+                "owner"
+              ]
+            },
+            "description": "Public mess owner signup. Role is set to OWNER and status to PENDING. No JWT is issued until admin verifies the account."
+          }
+        },
+        {
+          "name": "Signin - Customer (USER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"userToken\", jsonData.token);",
+                  "    console.log(\"Updated userToken\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"aman.verma@example.com\",\n  \"password\": \"Password@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signin"
+              ]
+            },
+            "description": "Authenticates a customer account and receives signed JWT token."
+          }
+        },
+        {
+          "name": "Signin - Mess Owner (OWNER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"ownerToken\", jsonData.token);",
+                  "    console.log(\"Updated ownerToken\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"karan.owner@example.com\",\n  \"password\": \"OwnerPass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signin"
+              ]
+            },
+            "description": "Signs in an approved mess owner. If owner is PENDING approval, returns HTTP 403 Forbidden."
+          }
+        },
+        {
+          "name": "Signin - Administrator (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"adminToken\", jsonData.token);",
+                  "    console.log(\"Updated adminToken\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@messloc.com\",\n  \"password\": \"Admin@MessLoc123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signin"
+              ]
+            },
+            "description": "Signs in the platform admin and receives adminToken."
+          }
+        },
+        {
+          "name": "Get Current Authenticated User Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Validates the current JWT token and returns user identity and role summary."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. User Profile Management",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Retrieves the full profile of the currently logged-in account (USER, OWNER, or ADMIN). Identity is derived strictly from the SecurityContext."
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aman V. Sharma\",\n  \"phone\": \"9876500000\",\n  \"city\": \"Dehradun\",\n  \"profileImage\": \"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "me"
+              ]
+            },
+            "description": "Updates allowed editable fields (name, phone, city, profileImage). Passwords, roles, and status are protected."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Mess Listing & Owner Management",
+      "item": [
+        {
+          "name": "Create Mess Listing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set(\"messId\", jsonData.data.id);",
+                  "    console.log(\"Saved newly created messId: \" + jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Annapurna Royal Mess\",\n  \"description\": \"Premium pure veg North Indian meals with unlimited chapatis, salad, dessert on weekends, and hygienic RO water.\",\n  \"address\": \"45/2 Subhash Nagar, Near Graphic Era University\",\n  \"city\": \"Dehradun\",\n  \"state\": \"Uttarakhand\",\n  \"pincode\": \"248002\",\n  \"latitude\": 30.2687,\n  \"longitude\": 77.9942,\n  \"contactNumber\": \"9876543210\",\n  \"monthlyPrice\": 3200.0,\n  \"foodType\": \"VEG\",\n  \"openingTime\": \"07:30\",\n  \"closingTime\": \"22:00\",\n  \"facilities\": [\n    \"RO Water\",\n    \"High-Speed WiFi\",\n    \"AC Dining Hall\",\n    \"Dedicated Parking\",\n    \"Weekend Special Sweets\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/messes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes"
+              ]
+            },
+            "description": "Creates a mess listing under the logged-in owner. Initial verification status is PENDING and operational status is ACTIVE."
+          }
+        },
+        {
+          "name": "Get My Messes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/messes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "owner",
+                "messes"
+              ]
+            },
+            "description": "Lists all mess listings belonging to the authenticated owner."
+          }
+        },
+        {
+          "name": "Get My Mess By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/messes/{{messId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "owner",
+                "messes",
+                "{{messId}}"
+              ]
+            },
+            "description": "Gets specific mess details. Server enforces owner authorization."
+          }
+        },
+        {
+          "name": "Update Mess",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Annapurna Royal Mess & Caterers\",\n  \"description\": \"Newly renovated premium veg & non-veg meals with special Sunday desserts and unlimited salad bar.\",\n  \"address\": \"45/2 Subhash Nagar, Opposite GEU Gate 2\",\n  \"city\": \"Dehradun\",\n  \"state\": \"Uttarakhand\",\n  \"pincode\": \"248002\",\n  \"latitude\": 30.2687,\n  \"longitude\": 77.9942,\n  \"contactNumber\": \"9876543210\",\n  \"monthlyPrice\": 3500.0,\n  \"foodType\": \"BOTH\",\n  \"openingTime\": \"07:00\",\n  \"closingTime\": \"22:30\",\n  \"facilities\": [\n    \"RO Water\",\n    \"High-Speed WiFi\",\n    \"AC Dining Hall\",\n    \"Two-Wheeler Parking\",\n    \"CCTV Surveillance\"\n  ],\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/messes/{{messId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "owner",
+                "messes",
+                "{{messId}}"
+              ]
+            },
+            "description": "Updates mess details. Preserves ownerId and admin verification status."
+          }
+        },
+        {
+          "name": "Deactivate Mess",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/messes/{{messId}}/deactivate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "owner",
+                "messes",
+                "{{messId}}",
+                "deactivate"
+              ]
+            },
+            "description": "Sets operational status to INACTIVE, removing it from public discovery."
+          }
+        },
+        {
+          "name": "Activate Mess",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/messes/{{messId}}/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "owner",
+                "messes",
+                "{{messId}}",
+                "activate"
+              ]
+            },
+            "description": "Restores operational status to ACTIVE."
+          }
+        },
+        {
+          "name": "Delete Mess",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/messes/{{messId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "owner",
+                "messes",
+                "{{messId}}"
+              ]
+            },
+            "description": "Deletes the mess listing. Enforces owner authorization."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Public Mess Discovery",
+      "item": [
+        {
+          "name": "1. Get All Approved Messes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes"
+              ]
+            },
+            "description": "Public browse of all approved and active messes without authentication."
+          }
+        },
+        {
+          "name": "2. Search Messes by City",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes?city=Dehradun",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Dehradun"
+                }
+              ]
+            },
+            "description": "Filter approved and active messes by city (case-insensitive and trimmed)."
+          }
+        },
+        {
+          "name": "3. Filter by Food Type (VEG)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes?foodType=VEG",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes"
+              ],
+              "query": [
+                {
+                  "key": "foodType",
+                  "value": "VEG"
+                }
+              ]
+            },
+            "description": "Filters for vegetarian meal options (returns VEG and BOTH messes)."
+          }
+        },
+        {
+          "name": "4. Filter by Food Type (NON_VEG)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes?foodType=NON_VEG",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes"
+              ],
+              "query": [
+                {
+                  "key": "foodType",
+                  "value": "NON_VEG"
+                }
+              ]
+            },
+            "description": "Filters for non-vegetarian meal options (returns NON_VEG and BOTH messes)."
+          }
+        },
+        {
+          "name": "5. Filter by Food Type (BOTH)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes?foodType=BOTH",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes"
+              ],
+              "query": [
+                {
+                  "key": "foodType",
+                  "value": "BOTH"
+                }
+              ]
+            },
+            "description": "Filters strictly for messes providing BOTH vegetarian and non-vegetarian plans."
+          }
+        },
+        {
+          "name": "6. Combined City and Food Type Filter",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes?city=Dehradun&foodType=VEG",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Dehradun"
+                },
+                {
+                  "key": "foodType",
+                  "value": "VEG"
+                }
+              ]
+            },
+            "description": "Filters messes matching both city name and dietary requirements."
+          }
+        },
+        {
+          "name": "7. Get Public Mess Details by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes/{{messId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes",
+                "{{messId}}"
+              ]
+            },
+            "description": "Fetches public details of an approved active mess by ID. Returns 404 if pending or inactive."
+          }
+        },
+        {
+          "name": "8. Discover Nearby Messes (Radius)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes/nearby?latitude=30.3165&longitude=78.0322&radius=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes",
+                "nearby"
+              ],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "30.3165"
+                },
+                {
+                  "key": "longitude",
+                  "value": "78.0322"
+                },
+                {
+                  "key": "radius",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Discovers approved active messes within given radius (km) sorted nearest-first with distanceInKm."
+          }
+        },
+        {
+          "name": "9. Discover Nearby Messes with Food Type Filter",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messes/nearby?latitude=30.3165&longitude=78.0322&radius=10&foodType=VEG",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messes",
+                "nearby"
+              ],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "30.3165"
+                },
+                {
+                  "key": "longitude",
+                  "value": "78.0322"
+                },
+                {
+                  "key": "radius",
+                  "value": "10"
+                },
+                {
+                  "key": "foodType",
+                  "value": "VEG"
+                }
+              ]
+            },
+            "description": "Discovers nearby messes matching dietary filter within radius."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Admin Management",
+      "item": [
+        {
+          "name": "Get All Platform Messes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/messes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "messes"
+              ]
+            },
+            "description": "Admin endpoint. Lists all messes regardless of status."
+          }
+        },
+        {
+          "name": "Get Pending Messes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/messes/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "messes",
+                "pending"
+              ]
+            },
+            "description": "Admin endpoint. Lists messes awaiting admin approval."
+          }
+        },
+        {
+          "name": "Approve Mess",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/messes/{{messId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "messes",
+                "{{messId}}",
+                "approve"
+              ]
+            },
+            "description": "Admin endpoint. Approves a mess for public discovery."
+          }
+        },
+        {
+          "name": "Reject Mess",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/messes/{{messId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "messes",
+                "{{messId}}",
+                "reject"
+              ]
+            },
+            "description": "Admin endpoint. Rejects a mess listing."
+          }
+        },
+        {
+          "name": "Get Pending Owners",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/owners/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "owners",
+                "pending"
+              ]
+            },
+            "description": "Admin endpoint. Lists owner accounts pending verification."
+          }
+        },
+        {
+          "name": "Verify & Activate Owner",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/owners/{{ownerUserId}}/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "owners",
+                "{{ownerUserId}}",
+                "verify"
+              ]
+            },
+            "description": "Admin endpoint. Verifies owner account, setting status to ACTIVE and isVerified to true."
+          }
+        },
+        {
+          "name": "Block Owner",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/owners/{{ownerUserId}}/block",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "owners",
+                "{{ownerUserId}}",
+                "block"
+              ]
+            },
+            "description": "Admin endpoint. Blocks an owner account."
+          }
+        },
+        {
+          "name": "Create New Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Operations Admin\",\n  \"email\": \"ops.admin@messloc.com\",\n  \"password\": \"Admin@12345\",\n  \"phone\": \"9876543299\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "create"
+              ]
+            },
+            "description": "Admin endpoint. Creates an additional administrator account."
+          }
+        },
+        {
+          "name": "Admin Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "test"
+              ]
+            },
+            "description": "Admin endpoint. Verifies ADMIN role access."
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Role Verification Test Endpoints",
+      "item": [
+        {
+          "name": "User Role Test",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/user/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "test"
+              ]
+            },
+            "description": "Test endpoint verifying USER role access."
+          }
+        },
+        {
+          "name": "Owner Role Test",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "owner",
+                "test"
+              ]
+            },
+            "description": "Test endpoint verifying OWNER role access."
+          }
+        }
+      ]
+    }
+  ]
+}

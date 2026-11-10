@@ -28,7 +28,9 @@ import java.util.List;
 @Builder
 @Document(collection = "messes")
 @CompoundIndexes({
-    @CompoundIndex(name = "verification_status_city_idx", def = "{'verificationStatus': 1, 'status': 1, 'city': 1}")
+    @CompoundIndex(name = "verification_status_city_idx", def = "{'verificationStatus': 1, 'status': 1, 'city': 1}"),
+    @CompoundIndex(name = "verification_status_food_idx", def = "{'verificationStatus': 1, 'status': 1, 'foodType': 1}"),
+    @CompoundIndex(name = "verification_status_city_food_idx", def = "{'verificationStatus': 1, 'status': 1, 'city': 1, 'foodType': 1}")
 })
 public class Mess {
 

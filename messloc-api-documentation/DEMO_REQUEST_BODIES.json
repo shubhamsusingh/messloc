@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MessLoc Demo Request Bodies",
+  "description": "Valid, realistic demo JSON request payloads matching exact DTO definitions and Jakarta validation constraints for all endpoints accepting a request body.",
+  "requests": {
+    "auth": {
+      "userSignup": {
+        "endpoint": "POST /api/auth/signup/user",
+        "description": "Registers a regular customer account. Role is automatically set to USER, and status is ACTIVE.",
+        "payload": {
+          "name": "Aman Verma",
+          "email": "aman.verma@example.com",
+          "password": "Password@123",
+          "phone": "9876543210"
+        }
+      },
+      "ownerSignup": {
+        "endpoint": "POST /api/auth/signup/owner",
+        "description": "Registers a mess owner account. Role is automatically set to OWNER, status is PENDING admin verification, and OwnerProfile is initialized.",
+        "payload": {
+          "name": "Karan Joshi",
+          "email": "karan.owner@example.com",
+          "password": "OwnerPass@123",
+          "phone": "9812345678",
+          "businessName": "Karan Bhojnalaya & Tiffin Service",
+          "businessDescription": "Authentic North Indian thali, wholesome tiffin packages, and hygienic home-style meal service for students and working professionals.",
+          "businessAddress": "Plot 12, Clock Tower, Rajpur Road, Dehradun",
+          "fssaiLicenseNumber": "12345678901234"
+        }
+      },
+      "signin": {
+        "userSignin": {
+          "endpoint": "POST /api/auth/signin",
+          "description": "Standard sign-in payload for a verified ACTIVE customer.",
+          "payload": {
+            "email": "aman.verma@example.com",
+            "password": "Password@123"
+          }
+        },
+        "ownerSignin": {
+          "endpoint": "POST /api/auth/signin",
+          "description": "Sign-in payload for an approved ACTIVE mess owner.",
+          "payload": {
+            "email": "karan.owner@example.com",
+            "password": "OwnerPass@123"
+          }
+        },
+        "adminSignin": {
+          "endpoint": "POST /api/auth/signin",
+          "description": "Sign-in payload for the platform administrator.",
+          "payload": {
+            "email": "admin@messloc.com",
+            "password": "Admin@MessLoc123"
+          }
+        }
+      }
+    },
+    "userProfile": {
+      "updateMyProfile": {
+        "userExample": {
+          "endpoint": "PUT /api/users/me",
+          "description": "Customer profile update. Only mutable safe fields (name, phone, city, profileImage) are accepted. Protected fields (id, email, password, role, status) are immutable.",
+          "payload": {
+            "name": "Aman V. Sharma",
+            "phone": "9876500000",
+            "city": "Dehradun",
+            "profileImage": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80"
+          }
+        },
+        "ownerExample": {
+          "endpoint": "PUT /api/users/me",
+          "description": "Owner personal profile update. Updates the underlying User identity record.",
+          "payload": {
+            "name": "Karan Kumar Joshi",
+            "phone": "9812399999",
+            "city": "Dehradun",
+            "profileImage": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=400&q=80"
+          }
+        },
+        "adminExample": {
+          "endpoint": "PUT /api/users/me",
+          "description": "Administrator profile update.",
+          "payload": {
+            "name": "Chief Platform Admin",
+            "phone": "9999999999",
+            "city": "Dehradun",
+            "profileImage": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+          }
+        }
+      }
+    },
+    "messManagement": {
+      "createMess": {
+        "endpoint": "POST /api/messes or POST /api/owner/messes",
+        "description": "Creates a new mess listing by an authenticated ACTIVE owner. verificationStatus is server-assigned as PENDING and status as ACTIVE.",
+        "payload": {
+          "name": "Annapurna Royal Mess",
+          "description": "Premium pure veg North Indian meals with unlimited chapatis, salad, dessert on weekends, and hygienic RO water.",
+          "address": "45/2 Subhash Nagar, Near Graphic Era University",
+          "city": "Dehradun",
+          "state": "Uttarakhand",
+          "pincode": "248002",
+          "latitude": 30.2687,
+          "longitude": 77.9942,
+          "contactNumber": "9876543210",
+          "monthlyPrice": 3200.0,
+          "foodType": "VEG",
+          "openingTime": "07:30",
+          "closingTime": "22:00",
+          "facilities": [
+            "RO Water",
+            "High-Speed WiFi",
+            "AC Dining Hall",
+            "Dedicated Parking",
+            "Weekend Special Sweets"
+          ]
+        }
+      },
+      "updateMess": {
+        "endpoint": "PUT /api/owner/messes/{id} or PUT /api/messes/{id}",
+        "description": "Updates details of a mess owned by the authenticated owner. Server enforces ownership check and coordinate/time validation.",
+        "payload": {
+          "name": "Annapurna Royal Mess & Caterers",
+          "description": "Newly renovated premium veg & non-veg meals with special Sunday desserts and unlimited salad bar.",
+          "address": "45/2 Subhash Nagar, Opposite GEU Gate 2",
+          "city": "Dehradun",
+          "state": "Uttarakhand",
+          "pincode": "248002",
+          "latitude": 30.2687,
+          "longitude": 77.9942,
+          "contactNumber": "9876543210",
+          "monthlyPrice": 3500.0,
+          "foodType": "BOTH",
+          "openingTime": "07:00",
+          "closingTime": "22:30",
+          "facilities": [
+            "RO Water",
+            "High-Speed WiFi",
+            "AC Dining Hall",
+            "Two-Wheeler Parking",
+            "CCTV Surveillance",
+            "Weekend Special Sweets"
+          ],
+          "status": "ACTIVE"
+        }
+      }
+    },
+    "adminManagement": {
+      "createAdmin": {
+        "endpoint": "POST /api/admin/create",
+        "description": "Creates a new administrator account. Only existing ADMINs can invoke this. Role is strictly assigned ADMIN and status is ACTIVE.",
+        "payload": {
+          "name": "Assistant Admin",
+          "email": "assistant.admin@messloc.com",
+          "password": "AdminSecured@2026",
+          "phone": "9876543299"
+        }
+      }
+    }
+  }
+}
+
