@@ -1,11 +1,13 @@
 package com.MessLoc.controller;
 
 import com.MessLoc.dto.mess.CreateMessRequest;
+import com.MessLoc.dto.mess.MessDetailsResponse;
 import com.MessLoc.dto.mess.MessResponse;
 import com.MessLoc.dto.mess.PublicMessResponse;
 import com.MessLoc.dto.mess.UpdateMessRequest;
 import com.MessLoc.dto.response.ApiResponse;
 import com.MessLoc.entity.User;
+import com.MessLoc.enums.FoodType;
 import com.MessLoc.exception.UnauthorizedMessAccessException;
 import com.MessLoc.repository.UserRepository;
 import com.MessLoc.security.CustomUserDetails;
@@ -132,20 +134,43 @@ public class MessController {
     }
 
     // ==========================================
-    // PUBLIC APIs
+    // PUBLIC DISCOVERY APIs
     // ==========================================
 
     @GetMapping("/messes")
     public ResponseEntity<ApiResponse<List<PublicMessResponse>>> getPublicMesses(
-            @RequestParam(required = false) String city) {
-        List<PublicMessResponse> response = messService.getPublicMesses(city);
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String foodType) {
+
+        FoodType parsedFoodType = null;
+        if (foodType != null && !foodType.trim().isEmpty()) {
+            parsedFoodType = FoodType.fromString(foodType);
+        }
+
+        List<PublicMessResponse> response = messService.getPublicMesses(city, parsedFoodType);
         return ResponseEntity.ok(ApiResponse.success("Messes fetched successfully", response));
     }
 
+    @GetMapping("/messes/nearby")
+    public ResponseEntity<ApiResponse<List<PublicMessResponse>>> getNearbyMesses(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam(required = false, defaultValue = "5.0") Double radius,
+            @RequestParam(required = false) String foodType) {
+
+        FoodType parsedFoodType = null;
+        if (foodType != null && !foodType.trim().isEmpty()) {
+            parsedFoodType = FoodType.fromString(foodType);
+        }
+
+        List<PublicMessResponse> response = messService.getNearbyMesses(latitude, longitude, radius, parsedFoodType);
+        return ResponseEntity.ok(ApiResponse.success("Nearby messes fetched successfully", response));
+    }
+
     @GetMapping("/messes/{id}")
-    public ResponseEntity<ApiResponse<PublicMessResponse>> getPublicMess(
+    public ResponseEntity<ApiResponse<MessDetailsResponse>> getPublicMess(
             @PathVariable String id) {
-        PublicMessResponse response = messService.getPublicMess(id);
+        MessDetailsResponse response = messService.getPublicMess(id);
         return ResponseEntity.ok(ApiResponse.success("Mess fetched successfully", response));
     }
 

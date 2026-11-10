@@ -1,11 +1,13 @@
 package com.MessLoc.repository;
 
 import com.MessLoc.entity.Mess;
+import com.MessLoc.enums.FoodType;
 import com.MessLoc.enums.MessStatus;
 import com.MessLoc.enums.VerificationStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,10 @@ public interface MessRepository extends MongoRepository<Mess, String> {
     List<Mess> findByVerificationStatusAndStatus(VerificationStatus verificationStatus, MessStatus status);
 
     List<Mess> findByVerificationStatusAndStatusAndCityIgnoreCase(VerificationStatus verificationStatus, MessStatus status, String city);
+
+    List<Mess> findByVerificationStatusAndStatusAndFoodTypeIn(VerificationStatus verificationStatus, MessStatus status, Collection<FoodType> foodTypes);
+
+    List<Mess> findByVerificationStatusAndStatusAndCityIgnoreCaseAndFoodTypeIn(VerificationStatus verificationStatus, MessStatus status, String city, Collection<FoodType> foodTypes);
 
     List<Mess> findByVerificationStatus(VerificationStatus verificationStatus);
 }

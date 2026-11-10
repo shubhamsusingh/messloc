@@ -1,12 +1,14 @@
 package com.MessLoc.service.impl;
 
 import com.MessLoc.dto.mess.CreateMessRequest;
+import com.MessLoc.dto.mess.MessDetailsResponse;
 import com.MessLoc.dto.mess.MessResponse;
 import com.MessLoc.dto.mess.PublicMessResponse;
 import com.MessLoc.dto.mess.UpdateMessRequest;
 import com.MessLoc.entity.Mess;
 import com.MessLoc.entity.User;
 import com.MessLoc.enums.AccountStatus;
+import com.MessLoc.enums.FoodType;
 import com.MessLoc.enums.MessStatus;
 import com.MessLoc.enums.Role;
 import com.MessLoc.enums.VerificationStatus;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +35,8 @@ public class MessServiceImpl implements MessService {
 
     private final MessRepository messRepository;
     private final UserRepository userRepository;
+
+    private static final double EARTH_RADIUS_KM = 6371.0;
 
     @Override
     public MessResponse createMess(CreateMessRequest request, String ownerId) {
@@ -146,37 +151,122 @@ public class MessServiceImpl implements MessService {
         messRepository.delete(mess);
     }
 
+    // ==========================================
+    // PUBLIC DISCOVERY OPERATIONS
+    // ==========================================
+
     @Override
     public List<PublicMessResponse> getPublicMesses() {
-        return getPublicMesses(null);
+        return getPublicMesses(null, null);
     }
 
     @Override
     public List<PublicMessResponse> getPublicMesses(String city) {
+        return getPublicMesses(city, null);
+    }
+
+    @Override
+    public List<PublicMessResponse> getPublicMesses(String city, FoodType foodType) {
+        if (city != null && city.trim().isEmpty()) {
+            throw new IllegalArgumentException("City search parameter cannot be blank");
+        }
+
+        String trimmedCity = (city != null) ? city.trim() : null;
+        List<FoodType> targetFoodTypes = resolveTargetFoodTypes(foodType);
+
         List<Mess> messes;
-        if (city != null && !city.trim().isEmpty()) {
+        if (trimmedCity != null && targetFoodTypes != null) {
+            messes = messRepository.findByVerificationStatusAndStatusAndCityIgnoreCaseAndFoodTypeIn(
+                    VerificationStatus.APPROVED, MessStatus.ACTIVE, trimmedCity, targetFoodTypes);
+        } else if (trimmedCity != null) {
             messes = messRepository.findByVerificationStatusAndStatusAndCityIgnoreCase(
-                    VerificationStatus.APPROVED, MessStatus.ACTIVE, city.trim());
+                    VerificationStatus.APPROVED, MessStatus.ACTIVE, trimmedCity);
+        } else if (targetFoodTypes != null) {
+            messes = messRepository.findByVerificationStatusAndStatusAndFoodTypeIn(
+                    VerificationStatus.APPROVED, MessStatus.ACTIVE, targetFoodTypes);
         } else {
             messes = messRepository.findByVerificationStatusAndStatus(
                     VerificationStatus.APPROVED, MessStatus.ACTIVE);
         }
+
         return messes.stream()
                 .map(this::mapToPublicResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PublicMessResponse getPublicMess(String id) {
-        Mess mess = messRepository.findById(id)
+    public List<PublicMessResponse> getNearbyMesses(Double latitude, Double longitude, Double radius) {
+        return getNearbyMesses(latitude, longitude, radius, null);
+    }
+
+    @Override
+    public List<PublicMessResponse> getNearbyMesses(Double latitude, Double longitude, Double radius, FoodType foodType) {
+        if (latitude == null) {
+            throw new IllegalArgumentException("Latitude is required");
+        }
+        if (latitude < -90.0 || latitude > 90.0) {
+            throw new IllegalArgumentException("Latitude must be between -90 and 90");
+        }
+        if (longitude == null) {
+            throw new IllegalArgumentException("Longitude is required");
+        }
+        if (longitude < -180.0 || longitude > 180.0) {
+            throw new IllegalArgumentException("Longitude must be between -180 and 180");
+        }
+        if (radius == null) {
+            radius = 5.0;
+        }
+        if (radius <= 0.0) {
+            throw new IllegalArgumentException("Radius must be greater than 0");
+        }
+        if (radius > 100.0) {
+            throw new IllegalArgumentException("Radius cannot exceed 100 km");
+        }
+
+        List<FoodType> targetFoodTypes = resolveTargetFoodTypes(foodType);
+        List<Mess> candidates;
+        if (targetFoodTypes != null) {
+            candidates = messRepository.findByVerificationStatusAndStatusAndFoodTypeIn(
+                    VerificationStatus.APPROVED, MessStatus.ACTIVE, targetFoodTypes);
+        } else {
+            candidates = messRepository.findByVerificationStatusAndStatus(
+                    VerificationStatus.APPROVED, MessStatus.ACTIVE);
+        }
+
+        final double searchRadius = radius;
+        return candidates.stream()
+                .filter(m -> m.getLatitude() != null && m.getLongitude() != null)
+                .map(m -> {
+                    double dist = calculateHaversineDistanceKm(latitude, longitude, m.getLatitude(), m.getLongitude());
+                    double roundedDist = Math.round(dist * 100.0) / 100.0;
+                    PublicMessResponse resp = mapToPublicResponse(m);
+                    resp.setDistanceInKm(roundedDist);
+                    return resp;
+                })
+                .filter(resp -> resp.getDistanceInKm() <= searchRadius)
+                .sorted(Comparator.comparingDouble(PublicMessResponse::getDistanceInKm))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public MessDetailsResponse getPublicMess(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("Mess ID cannot be blank");
+        }
+
+        Mess mess = messRepository.findById(id.trim())
                 .orElseThrow(() -> new MessNotFoundException("Mess not found with id: " + id));
 
         if (mess.getVerificationStatus() != VerificationStatus.APPROVED || mess.getStatus() != MessStatus.ACTIVE) {
             throw new MessNotFoundException("Mess is not publicly available or pending verification");
         }
 
-        return mapToPublicResponse(mess);
+        return mapToMessDetailsResponse(mess);
     }
+
+    // ==========================================
+    // ADMIN OPERATIONS
+    // ==========================================
 
     @Override
     public List<MessResponse> getAllMesses() {
@@ -210,6 +300,10 @@ public class MessServiceImpl implements MessService {
         messRepository.save(mess);
     }
 
+    // ==========================================
+    // HELPER METHODS
+    // ==========================================
+
     private Mess getMessOwnedByOwner(String messId, String ownerId) {
         Mess mess = messRepository.findById(messId)
                 .orElseThrow(() -> new MessNotFoundException("Mess not found with id: " + messId));
@@ -241,6 +335,33 @@ public class MessServiceImpl implements MessService {
         }
     }
 
+    private List<FoodType> resolveTargetFoodTypes(FoodType foodType) {
+        if (foodType == null) {
+            return null;
+        }
+        return switch (foodType) {
+            case VEG -> List.of(FoodType.VEG, FoodType.BOTH);
+            case NON_VEG -> List.of(FoodType.NON_VEG, FoodType.BOTH);
+            case BOTH -> List.of(FoodType.BOTH);
+        };
+    }
+
+    private double calculateHaversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        double originLatRad = Math.toRadians(lat1);
+        double targetLatRad = Math.toRadians(lat2);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                   Math.cos(originLatRad) * Math.cos(targetLatRad) *
+                   Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return EARTH_RADIUS_KM * c;
+    }
+
     private MessResponse mapToResponse(Mess mess) {
         return MessResponse.builder()
                 .id(mess.getId())
@@ -268,6 +389,26 @@ public class MessServiceImpl implements MessService {
 
     private PublicMessResponse mapToPublicResponse(Mess mess) {
         return PublicMessResponse.builder()
+                .id(mess.getId())
+                .name(mess.getName())
+                .description(mess.getDescription())
+                .address(mess.getAddress())
+                .city(mess.getCity())
+                .state(mess.getState())
+                .pincode(mess.getPincode())
+                .latitude(mess.getLatitude())
+                .longitude(mess.getLongitude())
+                .contactNumber(mess.getContactNumber())
+                .monthlyPrice(mess.getMonthlyPrice())
+                .foodType(mess.getFoodType())
+                .openingTime(mess.getOpeningTime())
+                .closingTime(mess.getClosingTime())
+                .facilities(mess.getFacilities())
+                .build();
+    }
+
+    private MessDetailsResponse mapToMessDetailsResponse(Mess mess) {
+        return MessDetailsResponse.builder()
                 .id(mess.getId())
                 .name(mess.getName())
                 .description(mess.getDescription())

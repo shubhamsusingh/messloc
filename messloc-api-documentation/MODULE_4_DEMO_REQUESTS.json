@@ -1,0 +1,112 @@
+{
+  "module": "Module 4 - Public Mess Discovery",
+  "version": "1.0.0",
+  "baseUrl": "http://localhost:8080",
+  "description": "Ready-to-use demo request payloads and URL query examples for MessLoc Public Mess Discovery module",
+  "endpoints": {
+    "getAllApprovedMesses": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Retrieves all APPROVED and ACTIVE mess listings without authentication. Excludes PENDING, REJECTED, and INACTIVE messes.",
+      "queryParams": {}
+    },
+    "searchMessesByCity": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes?city=Dehradun",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Searches approved active messes in Dehradun (case-insensitive and trimmed).",
+      "queryParams": {
+        "city": "Dehradun"
+      }
+    },
+    "filterMessesByFoodTypeVeg": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes?foodType=VEG",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Filters for vegetarian offerings. Returns messes explicitly marked VEG as well as messes marked BOTH.",
+      "queryParams": {
+        "foodType": "VEG"
+      }
+    },
+    "filterMessesByFoodTypeNonVeg": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes?foodType=NON_VEG",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Filters for non-vegetarian offerings. Returns messes explicitly marked NON_VEG as well as messes marked BOTH.",
+      "queryParams": {
+        "foodType": "NON_VEG"
+      }
+    },
+    "filterMessesByFoodTypeBoth": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes?foodType=BOTH",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Filters specifically for establishments offering both VEG and NON_VEG meal plans.",
+      "queryParams": {
+        "foodType": "BOTH"
+      }
+    },
+    "combinedCityAndFoodTypeFilter": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes?city=Dehradun&foodType=VEG",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Combines city matching with dietary filter. Returns VEG and BOTH messes located in Dehradun.",
+      "queryParams": {
+        "city": "Dehradun",
+        "foodType": "VEG"
+      }
+    },
+    "getMessDetailsById": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes/675abc123456789012345678",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Retrieves public details of an approved active mess by MongoDB ID. Returns 404 if pending, rejected, inactive, or not found.",
+      "pathVariables": {
+        "id": "675abc123456789012345678"
+      }
+    },
+    "discoverNearbyMesses": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes/nearby?latitude=30.3165&longitude=78.0322&radius=5",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Finds approved active messes within a 5 km radius using Haversine spherical distance calculation. Sorted nearest-first, includes distanceInKm.",
+      "queryParams": {
+        "latitude": 30.3165,
+        "longitude": 78.0322,
+        "radius": 5.0
+      }
+    },
+    "discoverNearbyMessesWithDietFilter": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/messes/nearby?latitude=30.3165&longitude=78.0322&radius=10&foodType=VEG",
+      "headers": {
+        "Accept": "application/json"
+      },
+      "description": "Finds approved vegetarian and dual-diet messes within a 10 km radius sorted by proximity.",
+      "queryParams": {
+        "latitude": 30.3165,
+        "longitude": 78.0322,
+        "radius": 10.0,
+        "foodType": "VEG"
+      }
+    }
+  }
+}
+

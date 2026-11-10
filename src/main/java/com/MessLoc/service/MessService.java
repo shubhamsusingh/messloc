@@ -1,9 +1,11 @@
 package com.MessLoc.service;
 
 import com.MessLoc.dto.mess.CreateMessRequest;
+import com.MessLoc.dto.mess.MessDetailsResponse;
 import com.MessLoc.dto.mess.MessResponse;
 import com.MessLoc.dto.mess.PublicMessResponse;
 import com.MessLoc.dto.mess.UpdateMessRequest;
+import com.MessLoc.enums.FoodType;
 
 import java.util.List;
 
@@ -18,10 +20,13 @@ public interface MessService {
     void activateMess(String id, String ownerId);
     void deleteMess(String id, String ownerId);
 
-    // PUBLIC Operations
+    // PUBLIC Discovery Operations
     List<PublicMessResponse> getPublicMesses();
     List<PublicMessResponse> getPublicMesses(String city);
-    PublicMessResponse getPublicMess(String id);
+    List<PublicMessResponse> getPublicMesses(String city, FoodType foodType);
+    List<PublicMessResponse> getNearbyMesses(Double latitude, Double longitude, Double radius);
+    List<PublicMessResponse> getNearbyMesses(Double latitude, Double longitude, Double radius, FoodType foodType);
+    MessDetailsResponse getPublicMess(String id);
 
     // ADMIN Operations
     List<MessResponse> getAllMesses();
