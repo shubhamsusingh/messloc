@@ -3,7 +3,7 @@
 > **Project:** MessLoc – Mess Discovery and Management System  
 > **Backend Framework:** Spring Boot 3.4.x / 4.x | Java 21 | Spring Security 6+ | JJWT 0.12.6 | Spring Data MongoDB  
 > **Report Date:** November 10, 2026  
-> **Overall Status:** 37 Endpoints Discovered | **37 Implemented (100%)** | **0 Broken** | **204/204 Automated Tests Passing**  
+> **Overall Status:** 37 Endpoints Discovered | **37 Implemented (100%)** | **0 Broken** | **223/223 Automated Tests Passing**  
 
 ---
 
@@ -16,7 +16,7 @@ Every controller mapping in the MessLoc backend codebase was audited against its
 | **IMPLEMENTED** | **37** | **100%** | Controller, service, repository, DTO validation, and error handling are fully operational. |
 | **PARTIALLY IMPLEMENTED** | **0** | **0%** | Zero endpoints with stubbed or incomplete logic. |
 | **BROKEN / INCOMPATIBLE** | **0** | **0%** | All modules compile cleanly with 100% test pass rate. |
-| **TESTED & VERIFIED** | **37 / 37** | **100%** | Verified through 204 automated JUnit tests and live Tomcat runtime execution. |
+| **TESTED & VERIFIED** | **37 / 37** | **100%** | Verified through 223 automated JUnit tests and live Tomcat runtime execution. |
 | **NOT IMPLEMENTED** | **5** | — | Features not yet built (documented in Section 3 for roadmap clarity). |
 
 ---
@@ -48,7 +48,7 @@ Every controller mapping in the MessLoc backend codebase was audited against its
 | **21** | Admin | List Pending Messes | `GET` | `/api/admin/messes/pending` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
 | **22** | Admin | Approve Mess Listing | `PATCH` | `/api/admin/messes/{id}/approve` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
 | **23** | Admin | Reject Mess Listing | `PATCH` | `/api/admin/messes/{id}/reject` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit) |
-| **24** | Admin | Create Admin Account | `POST` | `/api/admin/create` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit) |
+| **24** | Admin | Create Admin Account | `POST` | `/api/admin/create-admin` *(alias `/api/admin/create`)* | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
 | **25** | Admin | List Pending Owners | `GET` | `/api/admin/owners/pending` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit + E2E + Live) |
 | **26** | Admin | Verify & Activate Owner | `PATCH` | `/api/admin/owners/{userId}/verify` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
 | **27** | Admin | Block Owner Account | `PATCH` | `/api/admin/owners/{userId}/block` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit) |

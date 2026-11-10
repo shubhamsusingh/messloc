@@ -5,6 +5,7 @@ import com.MessLoc.dto.menu.MenuItemRequest;
 import com.MessLoc.dto.menu.UpdateMenuRequest;
 import com.MessLoc.dto.mess.CreateMessRequest;
 import com.MessLoc.dto.mess.UpdateMessRequest;
+import com.MessLoc.dto.request.CreateAdminRequest;
 import com.MessLoc.dto.request.OwnerSignupRequest;
 import com.MessLoc.dto.request.SigninRequest;
 import com.MessLoc.dto.request.UpdateUserProfileRequest;
@@ -684,6 +685,60 @@ public class EndToEndWorkflowIntegrationTest {
                         .content(maliciousSignupPayload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.user.role").value("USER"));
+
+        // 8. Admin-to-Admin Registration via POST /api/admin/create-admin
+        CreateAdminRequest createAdminReq = CreateAdminRequest.builder()
+                .name("Second Administrator")
+                .email("second.admin@messloc.com")
+                .password("SecondAdminPass123")
+                .phone("9876543210")
+                .build();
+
+        // 8a. User cannot create admin -> 403 Forbidden
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createAdminReq)))
+                .andExpect(status().isForbidden());
+
+        // 8b. Owner cannot create admin -> 403 Forbidden
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", owner1Token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createAdminReq)))
+                .andExpect(status().isForbidden());
+
+        // 8c. Admin successfully creates second admin -> 201 Created
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createAdminReq)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.email").value("second.admin@messloc.com"))
+                .andExpect(jsonPath("$.data.role").value("ADMIN"))
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.password").doesNotExist());
+
+        // 8d. Second admin signs in with credentials and accesses admin endpoints
+        SigninRequest secondAdminSignin = SigninRequest.builder()
+                .email("second.admin@messloc.com")
+                .password("SecondAdminPass123")
+                .build();
+
+        MvcResult secondAdminSigninResult = mockMvc.perform(post("/api/auth/signin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(secondAdminSignin)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andReturn();
+
+        String secondAdminToken = "Bearer " + objectMapper.readTree(secondAdminSigninResult.getResponse().getContentAsString()).get("token").asText();
+
+        mockMvc.perform(get("/api/admin/test")
+                        .header("Authorization", secondAdminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.role").value("ADMIN"));
     }
 
     // =========================================================================
