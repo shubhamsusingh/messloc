@@ -35,6 +35,16 @@
       "key": "ownerUserId",
       "value": "user-owner-1",
       "type": "string"
+    },
+    {
+      "key": "menuId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "itemId",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -1125,6 +1135,301 @@
             },
             "description": "Test endpoint verifying OWNER role access."
           }
+        }
+      ]
+    },
+    {
+      "name": "7. Menu Management",
+      "item": [
+        {
+          "name": "Owner Menu Management",
+          "item": [
+            {
+              "name": "1. Create Daily Menu",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var jsonData = pm.response.json();",
+                      "if (jsonData.data && jsonData.data.id) {",
+                      "    pm.collectionVariables.set(\"menuId\", jsonData.data.id);",
+                      "    console.log(\"Saved menuId:\", jsonData.data.id);",
+                      "}",
+                      "if (jsonData.data && jsonData.data.items && jsonData.data.items.length > 0) {",
+                      "    pm.collectionVariables.set(\"itemId\", jsonData.data.items[0].id);",
+                      "    console.log(\"Saved itemId:\", jsonData.data.items[0].id);",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ownerToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messId\": \"{{messId}}\",\n  \"menuDate\": \"2026-11-10\",\n  \"items\": [\n    {\n      \"mealType\": \"BREAKFAST\",\n      \"foodName\": \"Aloo Paratha\",\n      \"description\": \"Served with fresh curd and pickle\"\n    },\n    {\n      \"mealType\": \"LUNCH\",\n      \"foodName\": \"Dal Tadka\",\n      \"description\": \"Yellow lentils tempered with cumin\"\n    },\n    {\n      \"mealType\": \"DINNER\",\n      \"foodName\": \"Paneer Butter Masala\",\n      \"description\": \"Cottage cheese in rich tomato gravy\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus"
+                  ]
+                },
+                "description": "Creates a new daily menu for a mess. Prevents duplicate dates (409 Conflict). Requires active OWNER."
+              }
+            },
+            {
+              "name": "2. Update Daily Menu",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ownerToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"items\": [\n    {\n      \"mealType\": \"BREAKFAST\",\n      \"foodName\": \"Poha & Chai\",\n      \"description\": \"Steamed flattened rice\"\n    },\n    {\n      \"mealType\": \"LUNCH\",\n      \"foodName\": \"Rajma Chawal\",\n      \"description\": \"Kidney beans with steamed rice\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus/{{menuId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus",
+                    "{{menuId}}"
+                  ]
+                },
+                "description": "Replaces all items in an existing daily menu. Requires OWNER."
+              }
+            },
+            {
+              "name": "3. Add Food Item to Menu",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ownerToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"mealType\": \"DINNER\",\n  \"foodName\": \"Mix Veg Curry\",\n  \"description\": \"Seasonal mixed vegetables\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus/{{menuId}}/items",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus",
+                    "{{menuId}}",
+                    "items"
+                  ]
+                },
+                "description": "Appends a single food item to an existing daily menu. Disallows duplicate names within the same mealType."
+              }
+            },
+            {
+              "name": "4. Update Food Item",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ownerToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"mealType\": \"DINNER\",\n  \"foodName\": \"Shahi Paneer\",\n  \"description\": \"Royal cottage cheese in cashew cream\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus/{{menuId}}/items/{{itemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus",
+                    "{{menuId}}",
+                    "items",
+                    "{{itemId}}"
+                  ]
+                },
+                "description": "Updates an existing food item within a menu."
+              }
+            },
+            {
+              "name": "5. Delete Food Item",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ownerToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus/{{menuId}}/items/{{itemId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus",
+                    "{{menuId}}",
+                    "items",
+                    "{{itemId}}"
+                  ]
+                },
+                "description": "Deletes a specific food item from a menu."
+              }
+            },
+            {
+              "name": "6. Delete Daily Menu",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ownerToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus/{{menuId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus",
+                    "{{menuId}}"
+                  ]
+                },
+                "description": "Deletes an entire daily menu record."
+              }
+            },
+            {
+              "name": "7. Get Owner Weekly Menu",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{ownerToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus/owner/mess/{{messId}}/weekly?startDate=2026-11-10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus",
+                    "owner",
+                    "mess",
+                    "{{messId}}",
+                    "weekly"
+                  ],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2026-11-10"
+                    }
+                  ]
+                },
+                "description": "Returns a 7-day rolling view of the mess menu grouped by breakfast, lunch, and dinner."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Public Menu Viewing",
+          "item": [
+            {
+              "name": "1. Get Today's Menu (Public)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus/mess/{{messId}}/today",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus",
+                    "mess",
+                    "{{messId}}",
+                    "today"
+                  ]
+                },
+                "description": "Public unauthenticated endpoint to view today's menu for an APPROVED & ACTIVE mess."
+              }
+            },
+            {
+              "name": "2. Get Weekly Menu (Public)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/menus/mess/{{messId}}/weekly?startDate=2026-11-10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "menus",
+                    "mess",
+                    "{{messId}}",
+                    "weekly"
+                  ],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2026-11-10"
+                    }
+                  ]
+                },
+                "description": "Public unauthenticated endpoint to view a 7-day weekly menu for an APPROVED & ACTIVE mess."
+              }
+            }
+          ]
         }
       ]
     }

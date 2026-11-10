@@ -3,7 +3,7 @@
 > **Project:** MessLoc – Mess Discovery and Management System  
 > **Backend Framework:** Spring Boot 3.4.x / 4.x | Java 21 | Spring Security 6+ | JJWT 0.12.6 | Spring Data MongoDB  
 > **Report Date:** November 10, 2026  
-> **Overall Status:** 28 Endpoints Discovered | **28 Implemented (100%)** | **0 Broken** | **167/167 Automated Tests Passing**  
+> **Overall Status:** 37 Endpoints Discovered | **37 Implemented (100%)** | **0 Broken** | **204/204 Automated Tests Passing**  
 
 ---
 
@@ -13,10 +13,10 @@ Every controller mapping in the MessLoc backend codebase was audited against its
 
 | Status Category | Count | Percentage | Description |
 |---|---|---|---|
-| **IMPLEMENTED** | **28** | **100%** | Controller, service, repository, DTO validation, and error handling are fully operational. |
+| **IMPLEMENTED** | **37** | **100%** | Controller, service, repository, DTO validation, and error handling are fully operational. |
 | **PARTIALLY IMPLEMENTED** | **0** | **0%** | Zero endpoints with stubbed or incomplete logic. |
 | **BROKEN / INCOMPATIBLE** | **0** | **0%** | All modules compile cleanly with 100% test pass rate. |
-| **TESTED & VERIFIED** | **28 / 28** | **100%** | Verified through 167 automated JUnit tests and live Tomcat runtime execution. |
+| **TESTED & VERIFIED** | **37 / 37** | **100%** | Verified through 204 automated JUnit tests and live Tomcat runtime execution. |
 | **NOT IMPLEMENTED** | **5** | — | Features not yet built (documented in Section 3 for roadmap clarity). |
 
 ---
@@ -53,6 +53,15 @@ Every controller mapping in the MessLoc backend codebase was audited against its
 | **26** | Admin | Verify & Activate Owner | `PATCH` | `/api/admin/owners/{userId}/verify` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
 | **27** | Admin | Block Owner Account | `PATCH` | `/api/admin/owners/{userId}/block` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit) |
 | **28** | Admin | Admin RBAC Test | `GET` | `/api/admin/test` | `ADMIN` | **IMPLEMENTED** | ✅ Tested (Unit + Live) |
+| **29** | Menu | Create Daily Menu | `POST` | `/api/menus` | `OWNER` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
+| **30** | Menu | Update Daily Menu | `PUT` | `/api/menus/{menuId}` | `OWNER` | **IMPLEMENTED** | ✅ Tested (Unit) |
+| **31** | Menu | Add Food Item to Menu | `POST` | `/api/menus/{menuId}/items` | `OWNER` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
+| **32** | Menu | Update Food Item | `PUT` | `/api/menus/{menuId}/items/{itemId}` | `OWNER` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
+| **33** | Menu | Delete Food Item | `DELETE` | `/api/menus/{menuId}/items/{itemId}` | `OWNER` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
+| **34** | Menu | Delete Daily Menu | `DELETE` | `/api/menus/{menuId}` | `OWNER` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
+| **35** | Menu | Get Owner Weekly Menu | `GET` | `/api/menus/owner/mess/{messId}/weekly` | `OWNER` | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
+| **36** | Menu | Get Public Today's Menu | `GET` | `/api/menus/mess/{messId}/today` | Public | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
+| **37** | Menu | Get Public Weekly Menu | `GET` | `/api/menus/mess/{messId}/weekly` | Public | **IMPLEMENTED** | ✅ Tested (Unit + E2E) |
 
 *(Note: Testing probe endpoints `/api/user/test` and `/api/owner/test` remain operational as role verification probes).*
 
@@ -74,9 +83,9 @@ To maintain strict truth-in-documentation, the following features mentioned in c
 4. **Token Refresh Endpoint (`POST /api/auth/refresh-token`)**:
    - Status: `NOT IMPLEMENTED`
    - Current state: The application uses self-contained, stateless JJWT access tokens with a 24-hour expiration (`86400000 ms`). Refresh tokens are not persisted in MongoDB.
-5. **Daily Menu Management (`/api/messes/{id}/menu`)**:
+5. **Subscription Management (`/api/subscriptions/**`)**:
    - Status: `NOT IMPLEMENTED`
-   - Current state: No Menu entity or controller exists; meal details are currently maintained in `Mess.description` and `facilities`.
+   - Current state: Subscription domain model, repository, and controllers not yet implemented in backend. Scheduled for upcoming sprint.
 
 ---
 

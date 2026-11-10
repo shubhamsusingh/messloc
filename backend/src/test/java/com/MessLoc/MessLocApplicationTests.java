@@ -23,6 +23,9 @@ class MessLocApplicationTests {
     @MockitoBean
     private com.MessLoc.repository.MessRepository messRepository;
 
+    @MockitoBean
+    private com.MessLoc.repository.MenuRepository menuRepository;
+
     @TestConfiguration
     static class TestMongoConfig {
         @Bean(name = "mongoMappingContext")
