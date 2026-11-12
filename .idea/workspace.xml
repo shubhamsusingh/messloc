@@ -6,20 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="7650427c-1823-4f34-b587-1f15815198ef" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/controller/MessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/controller/MessController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/dto/mess/PublicMessResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/dto/mess/PublicMessResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/entity/Mess.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/entity/Mess.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/repository/MessRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/repository/MessRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/service/MessService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/service/MessService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/service/impl/MessServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/service/impl/MessServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/controller/MessController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/controller/MessController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/PublicMessResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/dto/mess/PublicMessResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/entity/Mess.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/entity/Mess.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/exception/GlobalExceptionHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/repository/MessRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/repository/MessRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/service/MessService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/service/MessService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/MessLoc/service/impl/MessServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/MessLoc/service/impl/MessServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/MessLoc/controller/AdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/MessLoc/controller/AdminControllerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/MessLoc/controller/AdminControllerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/MessLoc/integration/EndToEndWorkflowIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/MessLoc/integration/EndToEndWorkflowIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messloc-api-documentation/API_DOCUMENTATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/messloc-api-documentation/API_DOCUMENTATION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messloc-api-documentation/API_STATUS_REPORT.md" beforeDir="false" afterPath="$PROJECT_DIR$/messloc-api-documentation/API_STATUS_REPORT.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +34,7 @@
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/mess-discovery&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/menu-management&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/shivamkumar/Desktop/MessLock_01/messloc&quot;
   }
 }</component>

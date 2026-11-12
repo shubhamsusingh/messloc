@@ -959,10 +959,10 @@ Every endpoint (except authentication signin/signup which return specialized `Au
 ---
 
 ### 5.8 Create Administrator Account
-* **Purpose:** Creates an additional administrator account. Accessible strictly to existing administrators.
+* **Purpose:** Creates an additional administrator account. Accessible strictly to existing authenticated, active administrators.
 * **HTTP Method:** `POST`
-* **Endpoint URL:** `http://localhost:8080/api/admin/create`
-* **Authentication:** Required (Role: `ADMIN`)
+* **Endpoint URL:** `http://localhost:8080/api/admin/create-admin` *(alias `/api/admin/create`)*
+* **Authentication:** Required (Role: `ADMIN`, Status: `ACTIVE`)
 * **Required Headers:** `Content-Type: application/json`, `Authorization: Bearer <ADMIN_TOKEN>`
 
 #### Request Body

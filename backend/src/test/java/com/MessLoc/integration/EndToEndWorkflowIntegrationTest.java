@@ -1,16 +1,23 @@
 package com.MessLoc.integration;
 
+import com.MessLoc.dto.menu.CreateMenuRequest;
+import com.MessLoc.dto.menu.MenuItemRequest;
+import com.MessLoc.dto.menu.UpdateMenuRequest;
 import com.MessLoc.dto.mess.CreateMessRequest;
 import com.MessLoc.dto.mess.UpdateMessRequest;
+import com.MessLoc.dto.request.CreateAdminRequest;
 import com.MessLoc.dto.request.OwnerSignupRequest;
 import com.MessLoc.dto.request.SigninRequest;
 import com.MessLoc.dto.request.UpdateUserProfileRequest;
 import com.MessLoc.dto.request.UserSignupRequest;
+import com.MessLoc.entity.Menu;
+import com.MessLoc.entity.MenuItem;
 import com.MessLoc.entity.Mess;
 import com.MessLoc.entity.OwnerProfile;
 import com.MessLoc.entity.User;
 import com.MessLoc.enums.AccountStatus;
 import com.MessLoc.enums.FoodType;
+import com.MessLoc.enums.MealType;
 import com.MessLoc.enums.MessStatus;
 import com.MessLoc.enums.Role;
 import com.MessLoc.enums.VerificationStatus;
@@ -36,12 +43,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -74,6 +83,9 @@ public class EndToEndWorkflowIntegrationTest {
     @MockitoBean
     private MessRepository messRepository;
 
+    @MockitoBean
+    private com.MessLoc.repository.MenuRepository menuRepository;
+
     @org.springframework.boot.test.context.TestConfiguration
     static class TestMongoConfig {
         @org.springframework.context.annotation.Bean(name = "mongoMappingContext")
@@ -89,6 +101,7 @@ public class EndToEndWorkflowIntegrationTest {
     private final Map<String, User> userDatabase = new ConcurrentHashMap<>();
     private final Map<String, OwnerProfile> ownerProfileDatabase = new ConcurrentHashMap<>();
     private final Map<String, Mess> messDatabase = new ConcurrentHashMap<>();
+    private final Map<String, Menu> menuDatabase = new ConcurrentHashMap<>();
 
     private User adminUser;
     private String adminToken;
@@ -98,6 +111,7 @@ public class EndToEndWorkflowIntegrationTest {
         userDatabase.clear();
         ownerProfileDatabase.clear();
         messDatabase.clear();
+        menuDatabase.clear();
 
         // 1. Setup seed admin user
         adminUser = User.builder()
@@ -211,6 +225,45 @@ public class EndToEndWorkflowIntegrationTest {
                     .filter(m -> m.getVerificationStatus() == vStatus && m.getStatus() == mStatus && m.getCity().equalsIgnoreCase(city))
                     .toList();
         });
+
+        // 5. Mock MenuRepository dynamic in-memory behavior
+        when(menuRepository.save(any(Menu.class))).thenAnswer(invocation -> {
+            Menu m = invocation.getArgument(0);
+            if (m.getId() == null) {
+                m.setId("menu-" + UUID.randomUUID().toString().substring(0, 8));
+            }
+            menuDatabase.put(m.getId(), m);
+            return m;
+        });
+
+        when(menuRepository.findById(anyString())).thenAnswer(invocation -> {
+            String id = invocation.getArgument(0);
+            return Optional.ofNullable(menuDatabase.get(id));
+        });
+
+        when(menuRepository.findByMessIdAndMenuDate(anyString(), any(LocalDate.class))).thenAnswer(invocation -> {
+            String messId = invocation.getArgument(0);
+            LocalDate date = invocation.getArgument(1);
+            return menuDatabase.values().stream()
+                    .filter(m -> m.getMessId().equals(messId) && m.getMenuDate().equals(date))
+                    .findFirst();
+        });
+
+        when(menuRepository.findByMessIdAndMenuDateBetweenOrderByMenuDateAsc(anyString(), any(LocalDate.class), any(LocalDate.class))).thenAnswer(invocation -> {
+            String messId = invocation.getArgument(0);
+            LocalDate start = invocation.getArgument(1);
+            LocalDate end = invocation.getArgument(2);
+            return menuDatabase.values().stream()
+                    .filter(m -> m.getMessId().equals(messId) && !m.getMenuDate().isBefore(start) && !m.getMenuDate().isAfter(end))
+                    .sorted(Comparator.comparing(Menu::getMenuDate))
+                    .toList();
+        });
+
+        doAnswer(invocation -> {
+            String id = invocation.getArgument(0);
+            menuDatabase.remove(id);
+            return null;
+        }).when(menuRepository).deleteById(anyString());
     }
 
     // =========================================================================
@@ -632,5 +685,191 @@ public class EndToEndWorkflowIntegrationTest {
                         .content(maliciousSignupPayload))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.user.role").value("USER"));
+
+        // 8. Admin-to-Admin Registration via POST /api/admin/create-admin
+        CreateAdminRequest createAdminReq = CreateAdminRequest.builder()
+                .name("Second Administrator")
+                .email("second.admin@messloc.com")
+                .password("SecondAdminPass123")
+                .phone("9876543210")
+                .build();
+
+        // 8a. User cannot create admin -> 403 Forbidden
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createAdminReq)))
+                .andExpect(status().isForbidden());
+
+        // 8b. Owner cannot create admin -> 403 Forbidden
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", owner1Token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createAdminReq)))
+                .andExpect(status().isForbidden());
+
+        // 8c. Admin successfully creates second admin -> 201 Created
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createAdminReq)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.email").value("second.admin@messloc.com"))
+                .andExpect(jsonPath("$.data.role").value("ADMIN"))
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.password").doesNotExist());
+
+        // 8d. Second admin signs in with credentials and accesses admin endpoints
+        SigninRequest secondAdminSignin = SigninRequest.builder()
+                .email("second.admin@messloc.com")
+                .password("SecondAdminPass123")
+                .build();
+
+        MvcResult secondAdminSigninResult = mockMvc.perform(post("/api/auth/signin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(secondAdminSignin)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andReturn();
+
+        String secondAdminToken = "Bearer " + objectMapper.readTree(secondAdminSigninResult.getResponse().getContentAsString()).get("token").asText();
+
+        mockMvc.perform(get("/api/admin/test")
+                        .header("Authorization", secondAdminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.role").value("ADMIN"));
+    }
+
+    // =========================================================================
+    // WORKFLOW E: MENU MANAGEMENT LIFECYCLE
+    // =========================================================================
+
+    @Test
+    @DisplayName("Workflow E: Owner Creates Menu, Adds Item, Updates Item, Fetches Weekly View, Public Reads Menu, Deletes Item/Menu")
+    void testWorkflowE_MenuManagementLifecycle() throws Exception {
+        // Setup: Active owner with an approved & active mess
+        User owner = User.builder()
+                .id("owner-menu-1")
+                .name("Ramesh Chef")
+                .email("ramesh.chef@example.com")
+                .password(passwordEncoder.encode("ChefPass123"))
+                .role(Role.OWNER)
+                .status(AccountStatus.ACTIVE)
+                .build();
+        userDatabase.put(owner.getEmail(), owner);
+        String ownerToken = "Bearer " + jwtService.generateToken(owner);
+
+        Mess mess = Mess.builder()
+                .id("mess-menu-1")
+                .ownerId(owner.getId())
+                .name("Ramesh Punjabi Dhaba")
+                .city("Dehradun")
+                .verificationStatus(VerificationStatus.APPROVED)
+                .status(MessStatus.ACTIVE)
+                .build();
+        messDatabase.put(mess.getId(), mess);
+
+        LocalDate today = LocalDate.now();
+
+        // Step 1: Owner creates daily menu for today with Breakfast & Lunch
+        CreateMenuRequest createReq = CreateMenuRequest.builder()
+                .messId("mess-menu-1")
+                .menuDate(today)
+                .items(List.of(
+                        MenuItemRequest.builder().mealType(MealType.BREAKFAST).foodName("Aloo Paratha").description("With fresh curd and butter").build(),
+                        MenuItemRequest.builder().mealType(MealType.LUNCH).foodName("Dal Makhani").description("Slow-cooked black lentils").build()
+                ))
+                .build();
+
+        MvcResult createResult = mockMvc.perform(post("/api/menus")
+                        .header("Authorization", ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createReq)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.messId").value("mess-menu-1"))
+                .andExpect(jsonPath("$.data.items").isArray())
+                .andReturn();
+
+        String menuId = objectMapper.readTree(createResult.getResponse().getContentAsString()).get("data").get("id").asText();
+        assertNotNull(menuId);
+
+        // Step 2: Prevent duplicate menu for same mess and date -> 409 Conflict
+        mockMvc.perform(post("/api/menus")
+                        .header("Authorization", ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createReq)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success").value(false));
+
+        // Step 3: Owner adds dinner item to the menu
+        MenuItemRequest addItemReq = MenuItemRequest.builder()
+                .mealType(MealType.DINNER)
+                .foodName("Paneer Butter Masala")
+                .description("Rich cottage cheese gravy")
+                .build();
+
+        MvcResult addItemResult = mockMvc.perform(post("/api/menus/" + menuId + "/items")
+                        .header("Authorization", ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addItemReq)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.items[2].foodName").value("Paneer Butter Masala"))
+                .andExpect(jsonPath("$.data.items[2].mealType").value("DINNER"))
+                .andReturn();
+
+        JsonNode menuJson = objectMapper.readTree(addItemResult.getResponse().getContentAsString()).get("data");
+        String addedItemId = menuJson.get("items").get(2).get("id").asText();
+        assertNotNull(addedItemId);
+
+        // Step 4: Owner views weekly menu (7-day view)
+        mockMvc.perform(get("/api/menus/owner/mess/mess-menu-1/weekly")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.menus.length()").value(7));
+
+        // Step 5: Public user views today's menu (Unauthenticated)
+        mockMvc.perform(get("/api/menus/mess/mess-menu-1/today"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.breakfast[0].foodName").value("Aloo Paratha"))
+                .andExpect(jsonPath("$.data.lunch[0].foodName").value("Dal Makhani"))
+                .andExpect(jsonPath("$.data.dinner[0].foodName").value("Paneer Butter Masala"));
+
+        // Step 6: Public user views weekly menu (Unauthenticated)
+        mockMvc.perform(get("/api/menus/mess/mess-menu-1/weekly"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.menus.length()").value(7));
+
+        // Step 7: Update item
+        MenuItemRequest updateItemReq = MenuItemRequest.builder()
+                .mealType(MealType.DINNER)
+                .foodName("Shahi Paneer")
+                .description("Creamy tomato gravy")
+                .build();
+
+        mockMvc.perform(put("/api/menus/" + menuId + "/items/" + addedItemId)
+                        .header("Authorization", ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateItemReq)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.items[2].foodName").value("Shahi Paneer"));
+
+        // Step 8: Delete item
+        mockMvc.perform(delete("/api/menus/" + menuId + "/items/" + addedItemId)
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        // Step 9: Delete menu
+        mockMvc.perform(delete("/api/menus/" + menuId)
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
     }
 }

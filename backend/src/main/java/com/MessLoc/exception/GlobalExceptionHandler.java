@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleDuplicateKey(DuplicateKeyException ex) {
         log.warn("Database unique constraint violation: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ApiResponse.error(HttpStatus.CONFLICT.value(), "A record with this identifier or email already exists."));
+                .body(ApiResponse.error(HttpStatus.CONFLICT.value(), "A record with this identifier or date already exists."));
     }
 
     @ExceptionHandler(MessNotFoundException.class)
@@ -111,6 +111,27 @@ public class GlobalExceptionHandler {
         log.warn("Mess not found: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(MenuNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMenuNotFound(MenuNotFoundException ex) {
+        log.warn("Menu not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(MenuItemNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMenuItemNotFound(MenuItemNotFoundException ex) {
+        log.warn("Menu item not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+    }
+
+    @ExceptionHandler(MenuAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMenuAlreadyExists(MenuAlreadyExistsException ex) {
+        log.warn("Menu conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage()));
     }
 
     @ExceptionHandler(UnauthorizedMessAccessException.class)

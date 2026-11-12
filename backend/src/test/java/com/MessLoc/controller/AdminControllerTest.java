@@ -1,5 +1,6 @@
 package com.MessLoc.controller;
 
+import com.MessLoc.dto.request.CreateAdminRequest;
 import com.MessLoc.dto.request.UserSignupRequest;
 import com.MessLoc.entity.OwnerProfile;
 import com.MessLoc.entity.User;
@@ -29,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -76,6 +78,12 @@ class AdminControllerTest {
     @MockitoBean
     private AuthService authService;
 
+    @MockitoBean
+    private com.MessLoc.repository.MenuRepository menuRepository;
+
+    @MockitoBean
+    private com.MessLoc.service.MenuService menuService;
+
     @org.springframework.boot.test.context.TestConfiguration
     static class TestMongoConfig {
         @org.springframework.context.annotation.Bean(name = "mongoMappingContext")
@@ -87,6 +95,7 @@ class AdminControllerTest {
     private String adminToken;
     private String userToken;
     private String ownerToken;
+    private String blockedAdminToken;
 
     @BeforeEach
     void setUp() {
@@ -114,13 +123,23 @@ class AdminControllerTest {
                 .status(AccountStatus.ACTIVE)
                 .build();
 
+        User blockedAdmin = User.builder()
+                .id("admin-blocked")
+                .name("Blocked Admin")
+                .email("blockedadmin@test.com")
+                .role(Role.ADMIN)
+                .status(AccountStatus.BLOCKED)
+                .build();
+
         when(userDetailsService.loadUserByUsername("admin@test.com")).thenReturn(new CustomUserDetails(admin));
         when(userDetailsService.loadUserByUsername("user@test.com")).thenReturn(new CustomUserDetails(user));
         when(userDetailsService.loadUserByUsername("owner@test.com")).thenReturn(new CustomUserDetails(owner));
+        when(userDetailsService.loadUserByUsername("blockedadmin@test.com")).thenReturn(new CustomUserDetails(blockedAdmin));
 
         adminToken = "Bearer " + jwtService.generateToken(admin);
         userToken = "Bearer " + jwtService.generateToken(user);
         ownerToken = "Bearer " + jwtService.generateToken(owner);
+        blockedAdminToken = "Bearer " + jwtService.generateToken(blockedAdmin);
     }
 
     @Test
@@ -211,6 +230,206 @@ class AdminControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.success").value(false));
+    }
+
+    // =========================================================================
+    // DEDICATED TESTS FOR POST /api/admin/create-admin
+    // =========================================================================
+
+    @Test
+    void testCreateAdminEndpoint_Success() throws Exception {
+        CreateAdminRequest request = CreateAdminRequest.builder()
+                .name("Super Moderator")
+                .email("super.mod@messloc.com")
+                .password("SuperModPass123")
+                .phone("9876543210")
+                .build();
+
+        User savedAdmin = User.builder()
+                .id("admin-mod-1")
+                .name("Super Moderator")
+                .email("super.mod@messloc.com")
+                .password(passwordEncoder.encode("SuperModPass123"))
+                .phone("9876543210")
+                .role(Role.ADMIN)
+                .status(AccountStatus.ACTIVE)
+                .build();
+
+        when(userRepository.existsByEmail("super.mod@messloc.com")).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(savedAdmin);
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.data.id").value("admin-mod-1"))
+                .andExpect(jsonPath("$.data.name").value("Super Moderator"))
+                .andExpect(jsonPath("$.data.email").value("super.mod@messloc.com"))
+                .andExpect(jsonPath("$.data.phone").value("9876543210"))
+                .andExpect(jsonPath("$.data.role").value("ADMIN"))
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.password").doesNotExist())
+                .andExpect(jsonPath("$.data.passwordHash").doesNotExist());
+    }
+
+    @Test
+    void testCreateAdminEndpoint_UserCannotCreateAdmin_Returns403() throws Exception {
+        CreateAdminRequest request = CreateAdminRequest.builder()
+                .name("Unauthorized Admin")
+                .email("unauth@messloc.com")
+                .password("Password123")
+                .phone("9876543210")
+                .build();
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void testCreateAdminEndpoint_OwnerCannotCreateAdmin_Returns403() throws Exception {
+        CreateAdminRequest request = CreateAdminRequest.builder()
+                .name("Unauthorized Admin")
+                .email("unauth@messloc.com")
+                .password("Password123")
+                .phone("9876543210")
+                .build();
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", ownerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void testCreateAdminEndpoint_Unauthenticated_Returns401() throws Exception {
+        CreateAdminRequest request = CreateAdminRequest.builder()
+                .name("Anonymous Admin")
+                .email("anon@messloc.com")
+                .password("Password123")
+                .phone("9876543210")
+                .build();
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void testCreateAdminEndpoint_InvalidToken_Returns401() throws Exception {
+        CreateAdminRequest request = CreateAdminRequest.builder()
+                .name("Forged Admin")
+                .email("forged@messloc.com")
+                .password("Password123")
+                .phone("9876543210")
+                .build();
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", "Bearer invalid.jwt.signature")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void testCreateAdminEndpoint_BlockedAdmin_Rejected() throws Exception {
+        CreateAdminRequest request = CreateAdminRequest.builder()
+                .name("Blocked Admin Candidate")
+                .email("blocked.candidate@messloc.com")
+                .password("Password123")
+                .phone("9876543210")
+                .build();
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", blockedAdminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testCreateAdminEndpoint_DuplicateEmail_Returns409() throws Exception {
+        CreateAdminRequest request = CreateAdminRequest.builder()
+                .name("Duplicate Admin")
+                .email("admin@test.com")
+                .password("Password123")
+                .phone("9876543210")
+                .build();
+
+        when(userRepository.existsByEmail("admin@test.com")).thenReturn(true);
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void testCreateAdminEndpoint_ValidationFailures_Returns400() throws Exception {
+        CreateAdminRequest invalidRequest = CreateAdminRequest.builder()
+                .name("")
+                .email("not-an-email")
+                .password("short")
+                .phone("123")
+                .build();
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.data.name").exists())
+                .andExpect(jsonPath("$.data.email").exists())
+                .andExpect(jsonPath("$.data.password").exists())
+                .andExpect(jsonPath("$.data.phone").exists());
+    }
+
+    @Test
+    void testCreateAdminEndpoint_PasswordStoredAsBCryptHash() throws Exception {
+        CreateAdminRequest request = CreateAdminRequest.builder()
+                .name("Hash Check Admin")
+                .email("hashcheck@messloc.com")
+                .password("PlainTextSecret999")
+                .phone("9876543210")
+                .build();
+
+        org.mockito.ArgumentCaptor<User> captor = org.mockito.ArgumentCaptor.forClass(User.class);
+        when(userRepository.existsByEmail("hashcheck@messloc.com")).thenReturn(false);
+        when(userRepository.save(captor.capture())).thenAnswer(invocation -> {
+            User u = invocation.getArgument(0);
+            u.setId("hash-check-id");
+            return u;
+        });
+
+        mockMvc.perform(post("/api/admin/create-admin")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true));
+
+        User captured = captor.getValue();
+        assertNotNull(captured);
+        assertNotEquals("PlainTextSecret999", captured.getPassword());
+        assertTrue(captured.getPassword().startsWith("$2a$") || captured.getPassword().startsWith("$2b$") || captured.getPassword().startsWith("$2y$"),
+                "Password must be BCrypt hashed");
+        assertTrue(passwordEncoder.matches("PlainTextSecret999", captured.getPassword()));
+        assertEquals(Role.ADMIN, captured.getRole());
+        assertEquals(AccountStatus.ACTIVE, captured.getStatus());
     }
 
     @Test

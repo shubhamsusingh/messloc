@@ -1,0 +1,103 @@
+{
+  "module": "Module 5 - Menu Management",
+  "version": "1.0.0",
+  "baseUrl": "http://localhost:8080",
+  "description": "Demo JSON request payloads and endpoint configurations for MessLoc Menu Management",
+  "endpoints": {
+    "createDailyMenu": {
+      "method": "POST",
+      "url": "http://localhost:8080/api/menus",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{ownerToken}}"
+      },
+      "body": {
+        "messId": "675abc123456789012345678",
+        "menuDate": "2026-11-10",
+        "items": [
+          {
+            "mealType": "BREAKFAST",
+            "foodName": "Aloo Paratha",
+            "description": "With fresh curd and butter"
+          },
+          {
+            "mealType": "LUNCH",
+            "foodName": "Dal Makhani",
+            "description": "Slow-cooked black lentils"
+          },
+          {
+            "mealType": "DINNER",
+            "foodName": "Paneer Butter Masala",
+            "description": "Rich cottage cheese gravy"
+          }
+        ]
+      }
+    },
+    "updateDailyMenu": {
+      "method": "PUT",
+      "url": "http://localhost:8080/api/menus/{{menuId}}",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{ownerToken}}"
+      },
+      "body": {
+        "items": [
+          {
+            "mealType": "BREAKFAST",
+            "foodName": "Poha & Chai",
+            "description": "Steamed flattened rice with spices"
+          },
+          {
+            "mealType": "LUNCH",
+            "foodName": "Rajma Chawal",
+            "description": "Traditional kidney beans with rice"
+          }
+        ]
+      }
+    },
+    "addMenuItem": {
+      "method": "POST",
+      "url": "http://localhost:8080/api/menus/{{menuId}}/items",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{ownerToken}}"
+      },
+      "body": {
+        "mealType": "DINNER",
+        "foodName": "Mix Veg Curry",
+        "description": "Seasonal fresh vegetables"
+      }
+    },
+    "updateMenuItem": {
+      "method": "PUT",
+      "url": "http://localhost:8080/api/menus/{{menuId}}/items/{{itemId}}",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{ownerToken}}"
+      },
+      "body": {
+        "mealType": "DINNER",
+        "foodName": "Shahi Paneer",
+        "description": "Creamy cashew gravy"
+      }
+    },
+    "getOwnerWeeklyMenu": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/menus/owner/mess/{{messId}}/weekly?startDate=2026-11-10",
+      "headers": {
+        "Authorization": "Bearer {{ownerToken}}"
+      }
+    },
+    "getPublicTodayMenu": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/menus/mess/{{messId}}/today",
+      "headers": {}
+    },
+    "getPublicWeeklyMenu": {
+      "method": "GET",
+      "url": "http://localhost:8080/api/menus/mess/{{messId}}/weekly?startDate=2026-11-10",
+      "headers": {}
+    }
+  }
+}
+

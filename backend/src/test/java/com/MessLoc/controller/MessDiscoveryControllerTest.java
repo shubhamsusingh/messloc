@@ -71,6 +71,12 @@ class MessDiscoveryControllerTest {
     @MockitoBean
     private MessRepository messRepository;
 
+    @MockitoBean
+    private com.MessLoc.repository.MenuRepository menuRepository;
+
+    @MockitoBean
+    private com.MessLoc.service.MenuService menuService;
+
     @org.springframework.boot.test.context.TestConfiguration
     static class TestMongoConfig {
         @org.springframework.context.annotation.Bean(name = "mongoMappingContext")

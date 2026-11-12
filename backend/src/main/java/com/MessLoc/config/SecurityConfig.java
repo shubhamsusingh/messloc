@@ -6,6 +6,7 @@ import com.MessLoc.security.JwtAuthenticationEntryPoint;
 import com.MessLoc.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -74,16 +75,24 @@ public class SecurityConfig {
                 // Authorization route matching
                 .authorizeHttpRequests(auth -> auth
                         // Public auth endpoints
-                        // Public auth endpoints
                         .requestMatchers("/api/auth/signup/user", "/api/auth/signup/owner", "/api/auth/signin").permitAll()
                         // Protected auth endpoints (current authenticated account)
                         .requestMatchers("/api/auth/me").authenticated()
                         // Protected user profile endpoint (all authenticated roles)
                         .requestMatchers("/api/users/me").authenticated()
+
                         // Public mess discovery endpoints (GET only)
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/messes", "/api/messes/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/messes", "/api/messes/**").permitAll()
                         // Protected mess creation endpoint (OWNER role required)
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/messes").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.POST, "/api/messes").hasRole("OWNER")
+
+                        // Public menu viewing endpoints (GET only)
+                        .requestMatchers(HttpMethod.GET, "/api/menus/mess/**").permitAll()
+                        // Protected owner menu management endpoints
+                        .requestMatchers("/api/menus/owner/**").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.POST, "/api/menus", "/api/menus/**").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/menus/**").hasRole("OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/menus/**").hasRole("OWNER")
 
                         // Role-specific protected endpoints
                         .requestMatchers("/api/user/**").hasRole("USER")
