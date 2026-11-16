@@ -86,7 +86,29 @@ public class MessServiceImpl implements MessService {
 
     @Override
     public List<MessResponse> getOwnerMesses(String ownerId) {
-        return messRepository.findByOwnerId(ownerId).stream()
+        return getOwnerMesses(ownerId, null);
+    }
+
+    @Override
+    public List<MessResponse> getOwnerMesses(String ownerId, String status) {
+        List<Mess> messes = messRepository.findByOwnerId(ownerId);
+        if (status == null || status.trim().isEmpty()) {
+            return messes.stream()
+                    .map(this::mapToResponse)
+                    .collect(Collectors.toList());
+        }
+
+        String normalizedStatus = status.trim().toUpperCase();
+        return messes.stream()
+                .filter(m -> {
+                    if (m.getVerificationStatus() != null && m.getVerificationStatus().name().equalsIgnoreCase(normalizedStatus)) {
+                        return true;
+                    }
+                    if (m.getStatus() != null && m.getStatus().name().equalsIgnoreCase(normalizedStatus)) {
+                        return true;
+                    }
+                    return false;
+                })
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

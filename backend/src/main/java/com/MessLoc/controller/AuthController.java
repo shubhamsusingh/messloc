@@ -1,6 +1,9 @@
 package com.MessLoc.controller;
 
+import com.MessLoc.dto.request.ChangePasswordRequest;
+import com.MessLoc.dto.request.ForgotPasswordRequest;
 import com.MessLoc.dto.request.OwnerSignupRequest;
+import com.MessLoc.dto.request.ResetPasswordRequest;
 import com.MessLoc.dto.request.SigninRequest;
 import com.MessLoc.dto.request.UserSignupRequest;
 import com.MessLoc.dto.response.ApiResponse;
@@ -10,8 +13,10 @@ import com.MessLoc.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,5 +63,38 @@ public class AuthController {
         }
         UserResponse userResponse = authService.getCurrentUser(authentication.getName());
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "User retrieved successfully", userResponse));
+    }
+
+    @PatchMapping("/change-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getName())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "Not authenticated"));
+        }
+        authService.changePassword(request, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "Password changed successfully", null));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok(ApiResponse.success(
+                HttpStatus.OK.value(),
+                "If the email is registered, password reset instructions have been sent.",
+                null
+        ));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.success(
+                HttpStatus.OK.value(),
+                "Password has been successfully reset. You can now log in with your new password.",
+                null
+        ));
     }
 }

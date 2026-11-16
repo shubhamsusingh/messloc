@@ -53,6 +53,31 @@
             "password": "Admin@MessLoc123"
           }
         }
+      },
+      "changePassword": {
+        "endpoint": "PATCH /api/auth/change-password",
+        "description": "Changes the password of the authenticated account. Requires current password validation, complexity, and confirmation match.",
+        "payload": {
+          "currentPassword": "CurrentPassword@123",
+          "newPassword": "NewStrongPassword@456",
+          "confirmPassword": "NewStrongPassword@456"
+        }
+      },
+      "forgotPassword": {
+        "endpoint": "POST /api/auth/forgot-password",
+        "description": "Initiates password reset workflow for a registered account. Returns generic success message to prevent user enumeration.",
+        "payload": {
+          "email": "aman.verma@example.com"
+        }
+      },
+      "resetPassword": {
+        "endpoint": "POST /api/auth/reset-password",
+        "description": "Completes password reset using raw one-time hex token received via email.",
+        "payload": {
+          "token": "4a7b9c2d1e0f3a5b6c8d7e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
+          "newPassword": "NewStrongPassword@456",
+          "confirmPassword": "NewStrongPassword@456"
+        }
       }
     },
     "userProfile": {
@@ -147,16 +172,16 @@
     },
     "adminManagement": {
       "createAdmin": {
-        "endpoint": "POST /api/admin/create",
-        "description": "Creates a new administrator account. Only existing ADMINs can invoke this. Role is strictly assigned ADMIN and status is ACTIVE.",
+        "endpoint": "POST /api/admin/create-admin",
+        "alias": "POST /api/admin/create",
+        "description": "Creates a new administrator account. Only active authenticated ADMINs can invoke this. Role is strictly assigned ADMIN and status is ACTIVE.",
         "payload": {
-          "name": "Assistant Admin",
-          "email": "assistant.admin@messloc.com",
-          "password": "AdminSecured@2026",
-          "phone": "9876543299"
+          "name": "New Administrator",
+          "email": "newadmin@messloc.com",
+          "phone": "9876543210",
+          "password": "StrongPassword@123"
         }
       }
     }
   }
 }
-
