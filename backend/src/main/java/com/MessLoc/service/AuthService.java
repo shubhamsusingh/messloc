@@ -1,6 +1,9 @@
 package com.MessLoc.service;
 
+import com.MessLoc.dto.request.ChangePasswordRequest;
+import com.MessLoc.dto.request.ForgotPasswordRequest;
 import com.MessLoc.dto.request.OwnerSignupRequest;
+import com.MessLoc.dto.request.ResetPasswordRequest;
 import com.MessLoc.dto.request.SigninRequest;
 import com.MessLoc.dto.request.UserSignupRequest;
 import com.MessLoc.dto.response.AuthResponse;
@@ -42,4 +45,31 @@ public interface AuthService {
      * @return sanitized user response
      */
     UserResponse getCurrentUser(String email);
+
+    /**
+     * Changes the authenticated user's password.
+     * Enforces current password validation, new password complexity, and confirmation match.
+     *
+     * @param request change password payload
+     * @param authenticatedUserEmail the email extracted securely from the SecurityContext
+     */
+    void changePassword(ChangePasswordRequest request, String authenticatedUserEmail);
+
+    /**
+     * Initiates a password reset workflow.
+     * Generates a cryptographically secure token, hashes it, stores the hash, and triggers an email.
+     * Uses a generic response to prevent account enumeration.
+     *
+     * @param request forgot password payload containing the target email
+     */
+    void forgotPassword(ForgotPasswordRequest request);
+
+    /**
+     * Completes a password reset using a one-time token.
+     * Validates the token, ensures it is neither expired nor used, enforces password policy,
+     * updates the user's password, and invalidates outstanding tokens.
+     *
+     * @param request reset password payload containing token, new password, and confirmation
+     */
+    void resetPassword(ResetPasswordRequest request);
 }

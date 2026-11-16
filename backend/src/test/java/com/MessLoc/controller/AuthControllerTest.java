@@ -1,6 +1,9 @@
 package com.MessLoc.controller;
 
+import com.MessLoc.dto.request.ChangePasswordRequest;
+import com.MessLoc.dto.request.ForgotPasswordRequest;
 import com.MessLoc.dto.request.OwnerSignupRequest;
+import com.MessLoc.dto.request.ResetPasswordRequest;
 import com.MessLoc.dto.request.SigninRequest;
 import com.MessLoc.dto.request.UserSignupRequest;
 import com.MessLoc.dto.response.AuthResponse;
@@ -34,6 +37,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -75,6 +79,15 @@ class AuthControllerTest {
     @MockitoBean
     private com.MessLoc.service.MenuService menuService;
 
+    @MockitoBean
+    private com.MessLoc.repository.SubscriptionRepository subscriptionRepository;
+
+    @MockitoBean
+    private com.MessLoc.service.SubscriptionService subscriptionService;
+
+    @MockitoBean
+    private com.MessLoc.repository.PasswordResetTokenRepository passwordResetTokenRepository;
+
     @org.springframework.boot.test.context.TestConfiguration
     static class TestMongoConfig {
         @org.springframework.context.annotation.Bean(name = "mongoMappingContext")
@@ -86,9 +99,13 @@ class AuthControllerTest {
     private User activeUser;
     private User blockedUser;
     private User inactiveUser;
+    private User activeOwner;
+    private User activeAdmin;
     private String activeUserToken;
     private String blockedUserToken;
     private String inactiveUserToken;
+    private String activeOwnerToken;
+    private String activeAdminToken;
 
     @BeforeEach
     void setUp() {
@@ -116,16 +133,38 @@ class AuthControllerTest {
                 .status(AccountStatus.INACTIVE)
                 .build();
 
+        activeOwner = User.builder()
+                .id("o-101")
+                .name("Owner User")
+                .email("owner@messloc.com")
+                .role(Role.OWNER)
+                .status(AccountStatus.ACTIVE)
+                .build();
+
+        activeAdmin = User.builder()
+                .id("a-101")
+                .name("Admin User")
+                .email("admin@messloc.com")
+                .role(Role.ADMIN)
+                .status(AccountStatus.ACTIVE)
+                .build();
+
         when(userDetailsService.loadUserByUsername("shivam@messloc.com"))
                 .thenReturn(new CustomUserDetails(activeUser));
         when(userDetailsService.loadUserByUsername("blocked@messloc.com"))
                 .thenReturn(new CustomUserDetails(blockedUser));
         when(userDetailsService.loadUserByUsername("inactive@messloc.com"))
                 .thenReturn(new CustomUserDetails(inactiveUser));
+        when(userDetailsService.loadUserByUsername("owner@messloc.com"))
+                .thenReturn(new CustomUserDetails(activeOwner));
+        when(userDetailsService.loadUserByUsername("admin@messloc.com"))
+                .thenReturn(new CustomUserDetails(activeAdmin));
 
         activeUserToken = "Bearer " + jwtService.generateToken(activeUser);
         blockedUserToken = "Bearer " + jwtService.generateToken(blockedUser);
         inactiveUserToken = "Bearer " + jwtService.generateToken(inactiveUser);
+        activeOwnerToken = "Bearer " + jwtService.generateToken(activeOwner);
+        activeAdminToken = "Bearer " + jwtService.generateToken(activeAdmin);
     }
 
     @Test
@@ -519,5 +558,145 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.data.passwordHash").doesNotExist())
                 .andExpect(jsonPath("$.data.secret").doesNotExist())
                 .andExpect(jsonPath("$.password").doesNotExist());
+    }
+
+    // ==========================================
+    // PASSWORD MANAGEMENT ENDPOINT TESTS
+    // ==========================================
+
+    @Test
+    void testChangePassword_AsUser_Returns200() throws Exception {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("CurrentPass123@")
+                .newPassword("NewStrongPass123@")
+                .confirmPassword("NewStrongPass123@")
+                .build();
+
+        mockMvc.perform(patch("/api/auth/change-password")
+                        .header("Authorization", activeUserToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Password changed successfully"));
+    }
+
+    @Test
+    void testChangePassword_AsOwner_Returns200() throws Exception {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("CurrentPass123@")
+                .newPassword("NewOwnerPass123@")
+                .confirmPassword("NewOwnerPass123@")
+                .build();
+
+        mockMvc.perform(patch("/api/auth/change-password")
+                        .header("Authorization", activeOwnerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    void testChangePassword_AsAdmin_Returns200() throws Exception {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("CurrentPass123@")
+                .newPassword("NewAdminPass123@")
+                .confirmPassword("NewAdminPass123@")
+                .build();
+
+        mockMvc.perform(patch("/api/auth/change-password")
+                        .header("Authorization", activeAdminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    void testChangePassword_Unauthenticated_Returns401() throws Exception {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("CurrentPass123@")
+                .newPassword("NewStrongPass123@")
+                .confirmPassword("NewStrongPass123@")
+                .build();
+
+        mockMvc.perform(patch("/api/auth/change-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testChangePassword_ValidationFailure_ShortPassword_Returns400() throws Exception {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("CurrentPass123@")
+                .newPassword("short")
+                .confirmPassword("short")
+                .build();
+
+        mockMvc.perform(patch("/api/auth/change-password")
+                        .header("Authorization", activeUserToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void testForgotPassword_PublicEndpoint_Returns200() throws Exception {
+        ForgotPasswordRequest request = ForgotPasswordRequest.builder()
+                .email("shivam@messloc.com")
+                .build();
+
+        mockMvc.perform(post("/api/auth/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("If the email is registered, password reset instructions have been sent."));
+    }
+
+    @Test
+    void testForgotPassword_ValidationFailure_InvalidEmail_Returns400() throws Exception {
+        ForgotPasswordRequest request = ForgotPasswordRequest.builder()
+                .email("not-an-email")
+                .build();
+
+        mockMvc.perform(post("/api/auth/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void testResetPassword_PublicEndpoint_Returns200() throws Exception {
+        ResetPasswordRequest request = ResetPasswordRequest.builder()
+                .token("validTokenHex1234567890abcdef")
+                .newPassword("NewBrandPassword123@")
+                .confirmPassword("NewBrandPassword123@")
+                .build();
+
+        mockMvc.perform(post("/api/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    void testResetPassword_ValidationFailure_BlankToken_Returns400() throws Exception {
+        ResetPasswordRequest request = ResetPasswordRequest.builder()
+                .token("")
+                .newPassword("NewBrandPassword123@")
+                .confirmPassword("NewBrandPassword123@")
+                .build();
+
+        mockMvc.perform(post("/api/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
     }
 }

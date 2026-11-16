@@ -75,9 +75,9 @@ public class SecurityConfig {
                 // Authorization route matching
                 .authorizeHttpRequests(auth -> auth
                         // Public auth endpoints
-                        .requestMatchers("/api/auth/signup/user", "/api/auth/signup/owner", "/api/auth/signin").permitAll()
+                        .requestMatchers("/api/auth/signup/user", "/api/auth/signup/owner", "/api/auth/signin", "/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
                         // Protected auth endpoints (current authenticated account)
-                        .requestMatchers("/api/auth/me").authenticated()
+                        .requestMatchers("/api/auth/me", "/api/auth/change-password").authenticated()
                         // Protected user profile endpoint (all authenticated roles)
                         .requestMatchers("/api/users/me").authenticated()
 

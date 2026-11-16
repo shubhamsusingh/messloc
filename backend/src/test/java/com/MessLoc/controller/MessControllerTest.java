@@ -82,6 +82,15 @@ class MessControllerTest {
     @MockitoBean
     private com.MessLoc.service.MenuService menuService;
 
+    @MockitoBean
+    private com.MessLoc.repository.SubscriptionRepository subscriptionRepository;
+
+    @MockitoBean
+    private com.MessLoc.service.SubscriptionService subscriptionService;
+
+    @MockitoBean
+    private com.MessLoc.repository.PasswordResetTokenRepository passwordResetTokenRepository;
+
     @org.springframework.boot.test.context.TestConfiguration
     static class TestMongoConfig {
         @org.springframework.context.annotation.Bean(name = "mongoMappingContext")
@@ -488,5 +497,77 @@ class MessControllerTest {
     void publicCanGetMesses() throws Exception {
         mockMvc.perform(get("/api/messes"))
                 .andExpect(status().isOk());
+    }
+
+    // ── Owner Mess Management & Verification Status Verification ──
+
+    @Test
+    void testOwnerCanGetOwnMesses_WithoutStatusFilter_Returns200() throws Exception {
+        when(messService.getOwnerMesses("o1", null)).thenReturn(List.of(
+                MessResponse.builder().id("m1").name("Mess 1").verificationStatus(com.MessLoc.enums.VerificationStatus.APPROVED).build(),
+                MessResponse.builder().id("m2").name("Mess 2").verificationStatus(com.MessLoc.enums.VerificationStatus.PENDING).build()
+        ));
+
+        mockMvc.perform(get("/api/owner/messes")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.length()").value(2));
+    }
+
+    @Test
+    void testOwnerCanGetOwnMesses_WithStatusFilterPending_Returns200() throws Exception {
+        when(messService.getOwnerMesses("o1", "PENDING")).thenReturn(List.of(
+                MessResponse.builder().id("m2").name("Mess 2").verificationStatus(com.MessLoc.enums.VerificationStatus.PENDING).build()
+        ));
+
+        mockMvc.perform(get("/api/owner/messes")
+                        .param("status", "PENDING")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].verificationStatus").value("PENDING"));
+    }
+
+    @Test
+    void testOwnerCanGetOwnMesses_WithStatusFilterApproved_Returns200() throws Exception {
+        when(messService.getOwnerMesses("o1", "APPROVED")).thenReturn(List.of(
+                MessResponse.builder().id("m1").name("Mess 1").verificationStatus(com.MessLoc.enums.VerificationStatus.APPROVED).build()
+        ));
+
+        mockMvc.perform(get("/api/owner/messes")
+                        .param("status", "APPROVED")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].verificationStatus").value("APPROVED"));
+    }
+
+    @Test
+    void testOwnerCanGetOwnMesses_WithStatusFilterRejected_Returns200() throws Exception {
+        when(messService.getOwnerMesses("o1", "REJECTED")).thenReturn(List.of(
+                MessResponse.builder().id("m3").name("Mess 3").verificationStatus(com.MessLoc.enums.VerificationStatus.REJECTED).build()
+        ));
+
+        mockMvc.perform(get("/api/owner/messes")
+                        .param("status", "REJECTED")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].verificationStatus").value("REJECTED"));
+    }
+
+    @Test
+    void testUserCannotAccessOwnerMesses_Returns403() throws Exception {
+        mockMvc.perform(get("/api/owner/messes")
+                        .header("Authorization", userToken))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testUnauthenticatedCannotAccessOwnerMesses_Returns401() throws Exception {
+        mockMvc.perform(get("/api/owner/messes"))
+                .andExpect(status().isUnauthorized());
     }
 }

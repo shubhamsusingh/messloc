@@ -45,6 +45,11 @@
       "key": "itemId",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "subscriptionId",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -291,6 +296,98 @@
             },
             "description": "Validates the current JWT token and returns user identity and role summary."
           }
+        },
+        {
+          "name": "Change Password (USER/OWNER/ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Password@123\",\n  \"newPassword\": \"NewStrongPassword@456\",\n  \"confirmPassword\": \"NewStrongPassword@456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/change-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "change-password"
+              ]
+            },
+            "description": "Changes the password of the authenticated account. Requires current password verification, complexity rules, and match check."
+          }
+        },
+        {
+          "name": "Forgot Password (Public)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"aman.verma@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "description": "Triggers a password reset token and dispatches reset instructions. Generic response to prevent enumeration."
+          }
+        },
+        {
+          "name": "Reset Password (Public)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"4a7b9c2d1e0f3a5b6c8d7e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b\",\n  \"newPassword\": \"NewStrongPassword@456\",\n  \"confirmPassword\": \"NewStrongPassword@456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "reset-password"
+              ]
+            },
+            "description": "Completes password reset using a one-time token from email."
+          }
         }
       ]
     },
@@ -415,7 +512,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/owner/messes",
+              "raw": "{{baseUrl}}/api/owner/messes?status=PENDING",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -423,6 +520,14 @@
                 "api",
                 "owner",
                 "messes"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PENDING",
+                  "description": "Optional filter: PENDING, APPROVED, REJECTED, ACTIVE, INACTIVE",
+                  "disabled": true
+                }
               ]
             },
             "description": "Lists all mess listings belonging to the authenticated owner."
@@ -1043,20 +1148,20 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Operations Admin\",\n  \"email\": \"ops.admin@messloc.com\",\n  \"password\": \"Admin@12345\",\n  \"phone\": \"9876543299\"\n}"
+              "raw": "{\n  \"name\": \"New Administrator\",\n  \"email\": \"newadmin@messloc.com\",\n  \"phone\": \"9876543210\",\n  \"password\": \"StrongPassword@123\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/admin/create",
+              "raw": "{{baseUrl}}/api/admin/create-admin",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "admin",
-                "create"
+                "create-admin"
               ]
             },
-            "description": "Admin endpoint. Creates an additional administrator account."
+            "description": "Admin endpoint. Creates an additional administrator account. Accessible strictly by active authenticated administrators (aliased to /api/admin/create)."
           }
         },
         {
@@ -1430,6 +1535,182 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "8. Subscription Management",
+      "item": [
+        {
+          "name": "1. Subscribe to Mess (USER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var json = pm.response.json();",
+                  "    if (json.data && json.data.id) {",
+                  "        pm.collectionVariables.set('subscriptionId', json.data.id);",
+                  "        console.log('Saved subscriptionId: ' + json.data.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messId\": \"{{messId}}\",\n  \"planId\": \"monthly\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions"
+              ]
+            },
+            "description": "Subscribes the authenticated customer (USER) to an APPROVED & ACTIVE mess. Backend automatically computes start and end dates."
+          }
+        },
+        {
+          "name": "2. Get My Subscriptions (USER)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions",
+                "me"
+              ]
+            },
+            "description": "Retrieves all subscriptions belonging to the authenticated customer."
+          }
+        },
+        {
+          "name": "3. Get Subscription By ID (USER/ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions",
+                "{{subscriptionId}}"
+              ]
+            },
+            "description": "Retrieves detailed information for a specific subscription. Accessible by subscriber or administrator."
+          }
+        },
+        {
+          "name": "4. Cancel Subscription (USER)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions",
+                "{{subscriptionId}}",
+                "cancel"
+              ]
+            },
+            "description": "Cancels an active subscription belonging to the authenticated customer. Sets status to CANCELLED."
+          }
+        },
+        {
+          "name": "5. Get Subscriptions for Owner's Mess (OWNER)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/subscriptions/owner/mess/{{messId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions",
+                "owner",
+                "mess",
+                "{{messId}}"
+              ]
+            },
+            "description": "Owner retrieves all subscriptions for their mess facility including permitted subscriber details."
+          }
+        },
+        {
+          "name": "6. Get All Platform Subscriptions (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "subscriptions"
+              ]
+            },
+            "description": "Administrative endpoint to list all platform subscriptions with optional status filter."
+          }
         }
       ]
     }

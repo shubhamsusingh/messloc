@@ -10,16 +10,19 @@ import com.MessLoc.dto.request.OwnerSignupRequest;
 import com.MessLoc.dto.request.SigninRequest;
 import com.MessLoc.dto.request.UpdateUserProfileRequest;
 import com.MessLoc.dto.request.UserSignupRequest;
+import com.MessLoc.dto.subscription.CreateSubscriptionRequest;
 import com.MessLoc.entity.Menu;
 import com.MessLoc.entity.MenuItem;
 import com.MessLoc.entity.Mess;
 import com.MessLoc.entity.OwnerProfile;
+import com.MessLoc.entity.Subscription;
 import com.MessLoc.entity.User;
 import com.MessLoc.enums.AccountStatus;
 import com.MessLoc.enums.FoodType;
 import com.MessLoc.enums.MealType;
 import com.MessLoc.enums.MessStatus;
 import com.MessLoc.enums.Role;
+import com.MessLoc.enums.SubscriptionStatus;
 import com.MessLoc.enums.VerificationStatus;
 import com.MessLoc.repository.MessRepository;
 import com.MessLoc.repository.OwnerProfileRepository;
@@ -86,6 +89,12 @@ public class EndToEndWorkflowIntegrationTest {
     @MockitoBean
     private com.MessLoc.repository.MenuRepository menuRepository;
 
+    @MockitoBean
+    private com.MessLoc.repository.SubscriptionRepository subscriptionRepository;
+
+    @MockitoBean
+    private com.MessLoc.repository.PasswordResetTokenRepository passwordResetTokenRepository;
+
     @org.springframework.boot.test.context.TestConfiguration
     static class TestMongoConfig {
         @org.springframework.context.annotation.Bean(name = "mongoMappingContext")
@@ -102,6 +111,7 @@ public class EndToEndWorkflowIntegrationTest {
     private final Map<String, OwnerProfile> ownerProfileDatabase = new ConcurrentHashMap<>();
     private final Map<String, Mess> messDatabase = new ConcurrentHashMap<>();
     private final Map<String, Menu> menuDatabase = new ConcurrentHashMap<>();
+    private final Map<String, Subscription> subscriptionDatabase = new ConcurrentHashMap<>();
 
     private User adminUser;
     private String adminToken;
@@ -112,6 +122,7 @@ public class EndToEndWorkflowIntegrationTest {
         ownerProfileDatabase.clear();
         messDatabase.clear();
         menuDatabase.clear();
+        subscriptionDatabase.clear();
 
         // 1. Setup seed admin user
         adminUser = User.builder()
@@ -264,6 +275,63 @@ public class EndToEndWorkflowIntegrationTest {
             menuDatabase.remove(id);
             return null;
         }).when(menuRepository).deleteById(anyString());
+
+        // 6. Mock SubscriptionRepository dynamic in-memory behavior
+        when(subscriptionRepository.save(any(Subscription.class))).thenAnswer(invocation -> {
+            Subscription s = invocation.getArgument(0);
+            if (s.getId() == null) {
+                s.setId("sub-" + UUID.randomUUID().toString().substring(0, 8));
+            }
+            subscriptionDatabase.put(s.getId(), s);
+            return s;
+        });
+
+        when(subscriptionRepository.findById(anyString())).thenAnswer(invocation -> {
+            String id = invocation.getArgument(0);
+            return Optional.ofNullable(subscriptionDatabase.get(id));
+        });
+
+        when(subscriptionRepository.findByUserId(anyString())).thenAnswer(invocation -> {
+            String userId = invocation.getArgument(0);
+            return subscriptionDatabase.values().stream().filter(s -> s.getUserId().equals(userId)).toList();
+        });
+
+        when(subscriptionRepository.findByUserIdAndStatus(anyString(), any(SubscriptionStatus.class))).thenAnswer(invocation -> {
+            String userId = invocation.getArgument(0);
+            SubscriptionStatus status = invocation.getArgument(1);
+            return subscriptionDatabase.values().stream()
+                    .filter(s -> s.getUserId().equals(userId) && s.getStatus() == status)
+                    .toList();
+        });
+
+        when(subscriptionRepository.findByMessId(anyString())).thenAnswer(invocation -> {
+            String messId = invocation.getArgument(0);
+            return subscriptionDatabase.values().stream().filter(s -> s.getMessId().equals(messId)).toList();
+        });
+
+        when(subscriptionRepository.findByMessIdAndStatus(anyString(), any(SubscriptionStatus.class))).thenAnswer(invocation -> {
+            String messId = invocation.getArgument(0);
+            SubscriptionStatus status = invocation.getArgument(1);
+            return subscriptionDatabase.values().stream()
+                    .filter(s -> s.getMessId().equals(messId) && s.getStatus() == status)
+                    .toList();
+        });
+
+        when(subscriptionRepository.findByStatus(any(SubscriptionStatus.class))).thenAnswer(invocation -> {
+            SubscriptionStatus status = invocation.getArgument(0);
+            return subscriptionDatabase.values().stream().filter(s -> s.getStatus() == status).toList();
+        });
+
+        when(subscriptionRepository.findAll()).thenAnswer(invocation -> new ArrayList<>(subscriptionDatabase.values()));
+
+        when(subscriptionRepository.findByUserIdAndMessIdAndStatus(anyString(), anyString(), any(SubscriptionStatus.class))).thenAnswer(invocation -> {
+            String userId = invocation.getArgument(0);
+            String messId = invocation.getArgument(1);
+            SubscriptionStatus status = invocation.getArgument(2);
+            return subscriptionDatabase.values().stream()
+                    .filter(s -> s.getUserId().equals(userId) && s.getMessId().equals(messId) && s.getStatus() == status)
+                    .findFirst();
+        });
     }
 
     // =========================================================================
@@ -871,5 +939,212 @@ public class EndToEndWorkflowIntegrationTest {
                         .header("Authorization", ownerToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
+    }
+
+    // =========================================================================
+    // WORKFLOW F: SUBSCRIPTION MANAGEMENT LIFECYCLE
+    // =========================================================================
+
+    @Test
+    @DisplayName("Workflow F: User Subscription, Duplicate Check, Cancellation, Owner Mess View, Admin View")
+    void testWorkflowF_SubscriptionManagementLifecycle() throws Exception {
+        // Setup: Registered active user
+        User subscriber = User.builder()
+                .id("sub-user-1")
+                .name("Rohan Sharma")
+                .email("rohan.sub@example.com")
+                .password(passwordEncoder.encode("Password@123"))
+                .phone("9876543210")
+                .role(Role.USER)
+                .status(AccountStatus.ACTIVE)
+                .build();
+        userDatabase.put(subscriber.getEmail(), subscriber);
+        String subscriberToken = "Bearer " + jwtService.generateToken(subscriber);
+
+        // Setup: Second user
+        User otherUser = User.builder()
+                .id("other-user-2")
+                .name("Other User")
+                .email("other.user@example.com")
+                .password(passwordEncoder.encode("Password@123"))
+                .phone("9111111111")
+                .role(Role.USER)
+                .status(AccountStatus.ACTIVE)
+                .build();
+        userDatabase.put(otherUser.getEmail(), otherUser);
+        String otherUserToken = "Bearer " + jwtService.generateToken(otherUser);
+
+        // Setup: Registered active owner
+        User owner = User.builder()
+                .id("owner-sub-1")
+                .name("Mahesh Owner")
+                .email("mahesh.owner@example.com")
+                .password(passwordEncoder.encode("Password@123"))
+                .phone("9888888888")
+                .role(Role.OWNER)
+                .status(AccountStatus.ACTIVE)
+                .build();
+        userDatabase.put(owner.getEmail(), owner);
+        String ownerToken = "Bearer " + jwtService.generateToken(owner);
+
+        // Setup: Another owner
+        User otherOwner = User.builder()
+                .id("other-owner-2")
+                .name("Other Owner")
+                .email("other.owner@example.com")
+                .password(passwordEncoder.encode("Password@123"))
+                .phone("9777777777")
+                .role(Role.OWNER)
+                .status(AccountStatus.ACTIVE)
+                .build();
+        userDatabase.put(otherOwner.getEmail(), otherOwner);
+        String otherOwnerToken = "Bearer " + jwtService.generateToken(otherOwner);
+
+        // Setup: Approved Active Mess
+        Mess approvedMess = Mess.builder()
+                .id("mess-sub-1")
+                .ownerId(owner.getId())
+                .name("Shree Krishna Bhojanalaya")
+                .monthlyPrice(3200.0)
+                .city("Pune")
+                .verificationStatus(VerificationStatus.APPROVED)
+                .status(MessStatus.ACTIVE)
+                .build();
+        messDatabase.put(approvedMess.getId(), approvedMess);
+
+        // Setup: Pending Mess
+        Mess pendingMess = Mess.builder()
+                .id("mess-pending-1")
+                .ownerId(owner.getId())
+                .name("Unapproved Mess")
+                .monthlyPrice(2800.0)
+                .city("Pune")
+                .verificationStatus(VerificationStatus.PENDING)
+                .status(MessStatus.ACTIVE)
+                .build();
+        messDatabase.put(pendingMess.getId(), pendingMess);
+
+        // Step 1: User attempts to subscribe to PENDING mess -> 400 Bad Request
+        CreateSubscriptionRequest pendingSubReq = CreateSubscriptionRequest.builder()
+                .messId("mess-pending-1")
+                .build();
+
+        mockMvc.perform(post("/api/subscriptions")
+                        .header("Authorization", subscriberToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(pendingSubReq)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+
+        // Step 2: User subscribes to APPROVED and ACTIVE mess -> 201 Created
+        CreateSubscriptionRequest validSubReq = CreateSubscriptionRequest.builder()
+                .messId("mess-sub-1")
+                .planId("monthly")
+                .build();
+
+        var createResult = mockMvc.perform(post("/api/subscriptions")
+                        .header("Authorization", subscriberToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validSubReq)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.data.messName").value("Shree Krishna Bhojanalaya"))
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.price").value(3200.0))
+                .andReturn();
+
+        String subscriptionId = objectMapper.readTree(createResult.getResponse().getContentAsString())
+                .get("data").get("id").asText();
+        assertNotNull(subscriptionId);
+
+        // Step 3: Duplicate active subscription to same mess rejected -> 409 Conflict
+        mockMvc.perform(post("/api/subscriptions")
+                        .header("Authorization", subscriberToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validSubReq)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.status").value(409));
+
+        // Step 4: User views their subscriptions -> 200 OK
+        mockMvc.perform(get("/api/subscriptions/me")
+                        .header("Authorization", subscriberToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].id").value(subscriptionId))
+                .andExpect(jsonPath("$.data[0].status").value("ACTIVE"));
+
+        // Step 5: User views subscription details by ID -> 200 OK
+        mockMvc.perform(get("/api/subscriptions/" + subscriptionId)
+                        .header("Authorization", subscriberToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value(subscriptionId));
+
+        // Step 6: Owner views subscriptions for their mess -> 200 OK
+        mockMvc.perform(get("/api/subscriptions/owner/mess/mess-sub-1")
+                        .header("Authorization", ownerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].id").value(subscriptionId))
+                .andExpect(jsonPath("$.data[0].userName").value("Rohan Sharma"))
+                .andExpect(jsonPath("$.data[0].userEmail").value("rohan.sub@example.com"));
+
+        // Step 7: Another owner views subscriptions for mess-sub-1 -> 403 Forbidden
+        mockMvc.perform(get("/api/subscriptions/owner/mess/mess-sub-1")
+                        .header("Authorization", otherOwnerToken))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false));
+
+        // Step 8: Admin views all platform subscriptions -> 200 OK
+        mockMvc.perform(get("/api/admin/subscriptions")
+                        .header("Authorization", adminToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data[0].id").value(subscriptionId));
+
+        // Step 9: Regular user cannot access admin subscriptions endpoint -> 403 Forbidden
+        mockMvc.perform(get("/api/admin/subscriptions")
+                        .header("Authorization", subscriberToken))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false));
+
+        // Step 10: Another user cannot cancel subscriber's subscription -> 403 Forbidden
+        mockMvc.perform(patch("/api/subscriptions/" + subscriptionId + "/cancel")
+                        .header("Authorization", otherUserToken))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false));
+
+        // Step 11: Subscriber successfully cancels their subscription -> 200 OK
+        mockMvc.perform(patch("/api/subscriptions/" + subscriptionId + "/cancel")
+                        .header("Authorization", subscriberToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.status").value("CANCELLED"))
+                .andExpect(jsonPath("$.data.cancelledAt").isNotEmpty());
+
+        // Step 12: Cancelling already cancelled subscription -> 400 Bad Request
+        mockMvc.perform(patch("/api/subscriptions/" + subscriptionId + "/cancel")
+                        .header("Authorization", subscriberToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
+
+        // Step 13: User can subscribe again after previous cancellation -> 201 Created
+        CreateSubscriptionRequest resubscribeReq = CreateSubscriptionRequest.builder()
+                .messId("mess-sub-1")
+                .planId("quarterly")
+                .build();
+
+        mockMvc.perform(post("/api/subscriptions")
+                        .header("Authorization", subscriberToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(resubscribeReq)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.data.planId").value("quarterly"))
+                .andExpect(jsonPath("$.data.price").value(9600.0))
+                .andExpect(jsonPath("$.data.status").value("ACTIVE"));
     }
 }

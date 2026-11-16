@@ -1,12 +1,12 @@
 # MessLoc — Complete Backend REST API Reference & Specification
 
-> **Application Name:** MessLoc (Mess Discovery & Management Platform)  
-> **Backend Architecture:** Spring Boot 3.4.x / 4.x | Java 21 | Spring Security 6+ | JJWT 0.12.6 | Spring Data MongoDB  
-> **Base Server URL:** `http://localhost:8080`  
-> **Default Content-Type:** `application/json`  
-> **Authentication Format:** `Authorization: Bearer <JWT_TOKEN>`  
-> **Specification Version:** 1.0.0  
-> **Status:** Production-Ready | 26 Implemented & Tested Endpoints  
+> **Application Name:** MessLoc (Mess Discovery & Management Platform)
+> **Backend Architecture:** Spring Boot 3.4.x / 4.x | Java 21 | Spring Security 6+ | JJWT 0.12.6 | Spring Data MongoDB
+> **Base Server URL:** `http://localhost:8080`
+> **Default Content-Type:** `application/json`
+> **Authentication Format:** `Authorization: Bearer <JWT_TOKEN>`
+> **Specification Version:** 1.3.0
+> **Status:** Production-Ready | 46 Production Endpoints + 2 Test Probes | 304/304 Automated Tests Passing
 
 ---
 
@@ -17,6 +17,9 @@
    - [1.2 Register Mess Owner (OWNER)](#12-register-mess-owner-owner)
    - [1.3 User / Owner / Admin Sign In](#13-user--owner--admin-sign-in)
    - [1.4 Get Current Authenticated Account Summary](#14-get-current-authenticated-account-summary)
+   - [1.5 Change Password](#15-change-password)
+   - [1.6 Forgot Password](#16-forgot-password)
+   - [1.7 Reset Password](#17-reset-password)
 3. [Module 2: User Profile Management](#module-2-user-profile-management)
    - [2.1 Get My Profile](#21-get-my-profile)
    - [2.2 Update My Profile](#22-update-my-profile)
@@ -45,7 +48,24 @@
 7. [Module 6: Role Verification Test Endpoints](#module-6-role-verification-test-endpoints)
    - [6.1 Customer Role Access Test](#61-customer-role-access-test)
    - [6.2 Owner Role Access Test](#62-owner-role-access-test)
-8. [Standard Response & Error Formats](#standard-response--error-formats)
+8. [Module 7: Menu Management](#module-7-menu-management)
+   - [7.1 Create Daily Menu](#71-create-daily-menu)
+   - [7.2 Update Daily Menu](#72-update-daily-menu)
+   - [7.3 Add Menu Item](#73-add-menu-item)
+   - [7.4 Update Menu Item](#74-update-menu-item)
+   - [7.5 Delete Menu Item](#75-delete-menu-item)
+   - [7.6 Delete Daily Menu](#76-delete-daily-menu)
+   - [7.7 Get Owner Weekly Menu](#77-get-owner-weekly-menu)
+   - [7.8 Get Public Today's Menu](#78-get-public-todays-menu)
+   - [7.9 Get Public Weekly Menu](#79-get-public-weekly-menu)
+9. [Module 8: Subscription Management](#module-8-subscription-management)
+   - [8.1 Subscribe to Mess](#81-subscribe-to-mess)
+   - [8.2 Get My Subscriptions](#82-get-my-subscriptions)
+   - [8.3 Get Subscription Details by ID](#83-get-subscription-details-by-id)
+   - [8.4 Cancel Active Subscription](#84-cancel-active-subscription)
+   - [8.5 Get Subscriptions for Owner Mess](#85-get-subscriptions-for-owner-mess)
+   - [8.6 List All Platform Subscriptions (Admin)](#86-list-all-platform-subscriptions-admin)
+10. [Standard Response & Error Formats](#standard-response--error-formats)
 
 ---
 
@@ -315,6 +335,151 @@ Every endpoint (except authentication signin/signup which return specialized `Au
 
 ---
 
+### 1.5 Change Password
+* **Purpose:** Updates the authenticated account's password. Requires current password validation, enforces password complexity, prevents re-use of current password, and verifies confirmation match.
+* **HTTP Method:** `PATCH`
+* **Endpoint URL:** `http://localhost:8080/api/auth/change-password`
+* **Authentication:** Required (All roles: `USER`, `OWNER`, `ADMIN`)
+* **Required Headers:** `Authorization: Bearer <TOKEN>`, `Content-Type: application/json`
+
+#### Request Body
+```json
+{
+  "currentPassword": "CurrentPassword@123",
+  "newPassword": "NewStrongPassword@456",
+  "confirmPassword": "NewStrongPassword@456"
+}
+```
+
+#### Successful Response (`200 OK`)
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Password changed successfully",
+  "timestamp": "2026-11-14T19:00:00.000"
+}
+```
+
+#### Error Responses
+* **`400 Bad Request`** (Validation failure / password mismatch / password reuse / weak policy):
+  ```json
+  {
+    "success": false,
+    "status": 400,
+    "message": "New password and confirmation password do not match",
+    "timestamp": "2026-11-14T19:00:00.000"
+  }
+  ```
+* **`401 Unauthorized`** (Incorrect current password or missing JWT):
+  ```json
+  {
+    "success": false,
+    "status": 401,
+    "message": "Current password is incorrect",
+    "timestamp": "2026-11-14T19:00:00.000"
+  }
+  ```
+
+---
+
+### 1.6 Forgot Password
+* **Purpose:** Initiates a secure password reset workflow. Generates a cryptographically secure 32-byte token, computes its SHA-256 hash, stores the hash with a 15-minute TTL, invalidates prior unused tokens, and dispatches a reset link via email. Always returns a generic success message to prevent user enumeration. Rate limited to 3 requests per 15 minutes.
+* **HTTP Method:** `POST`
+* **Endpoint URL:** `http://localhost:8080/api/auth/forgot-password`
+* **Authentication:** None (Public Endpoint)
+* **Required Headers:** `Content-Type: application/json`
+
+#### Request Body
+```json
+{
+  "email": "aman.verma@example.com"
+}
+```
+
+#### Successful Response (`200 OK`)
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "If the email is registered, password reset instructions have been sent.",
+  "timestamp": "2026-11-14T19:00:00.000"
+}
+```
+
+#### Error Responses
+* **`400 Bad Request`** (Invalid email format):
+  ```json
+  {
+    "success": false,
+    "status": 400,
+    "message": "Validation failed. Please correct the invalid fields.",
+    "data": {
+      "email": "Email must be a valid email address"
+    },
+    "timestamp": "2026-11-14T19:00:00.000"
+  }
+  ```
+* **`429 Too Many Requests`** (Rate limit exceeded: > 3 attempts within 15 minutes):
+  ```json
+  {
+    "success": false,
+    "status": 429,
+    "message": "Too many password reset requests. Please wait a few minutes before trying again.",
+    "timestamp": "2026-11-14T19:00:00.000"
+  }
+  ```
+
+---
+
+### 1.7 Reset Password
+* **Purpose:** Completes the password reset process using a one-time reset token received via email. Validates token hash, checks expiry (15-minute window), enforces password complexity, encrypts password with BCrypt, marks token as used, and invalidates any outstanding tokens for the user.
+* **HTTP Method:** `POST`
+* **Endpoint URL:** `http://localhost:8080/api/auth/reset-password`
+* **Authentication:** None (Public Endpoint)
+* **Required Headers:** `Content-Type: application/json`
+
+#### Request Body
+```json
+{
+  "token": "4a7b9c2d1e0f3a5b6c8d7e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b",
+  "newPassword": "NewStrongPassword@456",
+  "confirmPassword": "NewStrongPassword@456"
+}
+```
+
+#### Successful Response (`200 OK`)
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Password has been successfully reset. You can now log in with your new password.",
+  "timestamp": "2026-11-14T19:00:00.000"
+}
+```
+
+#### Error Responses
+* **`400 Bad Request`** (Invalid, already used, or expired token):
+  ```json
+  {
+    "success": false,
+    "status": 400,
+    "message": "Invalid or already consumed password reset token",
+    "timestamp": "2026-11-14T19:00:00.000"
+  }
+  ```
+* **`400 Bad Request`** (Password mismatch or complexity violation):
+  ```json
+  {
+    "success": false,
+    "status": 400,
+    "message": "New password and confirmation password do not match",
+    "timestamp": "2026-11-14T19:00:00.000"
+  }
+  ```
+
+---
+
 ## Module 2: User Profile Management
 
 ### 2.1 Get My Profile
@@ -483,9 +648,16 @@ Every endpoint (except authentication signin/signup which return specialized `Au
 ---
 
 ### 3.2 Get My Mess Listings
-* **Purpose:** Retrieves all mess listings belonging to the authenticated owner.
+* **Purpose:** Retrieves all mess listings belonging to the authenticated owner across all verification states (`PENDING`, `APPROVED`, `REJECTED`) and operational statuses (`ACTIVE`, `INACTIVE`). Supports optional `status` query filtering.
 * **HTTP Method:** `GET`
 * **Endpoint URL:** `http://localhost:8080/api/owner/messes`
+* **Optional Query Parameters:**
+  - `status` (String): Filter by verification status (`PENDING`, `APPROVED`, `REJECTED`) or operational status (`ACTIVE`, `INACTIVE`).
+    - `GET /api/owner/messes?status=PENDING`
+    - `GET /api/owner/messes?status=APPROVED`
+    - `GET /api/owner/messes?status=REJECTED`
+    - `GET /api/owner/messes?status=ACTIVE`
+    - `GET /api/owner/messes?status=INACTIVE`
 * **Authentication:** Required (Role: `OWNER`)
 * **Required Headers:** `Authorization: Bearer <OWNER_TOKEN>`
 
@@ -1068,6 +1240,513 @@ Every endpoint (except authentication signin/signup which return specialized `Au
   "timestamp": "2026-11-09T19:50:00.123"
 }
 ```
+
+---
+
+## Module 7: Menu Management
+
+### Core Architectural Invariants
+1. One menu per mess per calendar date (enforced by unique MongoDB index `{messId: 1, menuDate: 1}`).
+2. Only verified, active owners who own the mess can create, update, or delete menus and items.
+3. Item uniqueness by meal category (`BREAKFAST`, `LUNCH`, `DINNER`).
+4. Public discovery gate: public viewing requires mess `verificationStatus == APPROVED` and `status == ACTIVE`.
+5. 7-day weekly menu guarantee with empty arrays for unrecorded days.
+
+### 2.1 Create Daily Menu
+- **Endpoint:** `POST /api/menus`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`OWNER` only)
+- **Success Code:** `201 Created`
+- **Response Type:** `ApiResponse<MenuResponse>`
+
+#### Request Body:
+```json
+{
+  "messId": "675abc123456789012345678",
+  "menuDate": "2026-11-10",
+  "items": [
+    {
+      "mealType": "BREAKFAST",
+      "foodName": "Aloo Paratha",
+      "description": "Stuffed potato flatbread served with fresh curd and pickle"
+    },
+    {
+      "mealType": "LUNCH",
+      "foodName": "Dal Tadka",
+      "description": "Yellow lentils tempered with garlic and cumin"
+    },
+    {
+      "mealType": "DINNER",
+      "foodName": "Paneer Butter Masala",
+      "description": "Cottage cheese cubes in rich tomato gravy"
+    }
+  ]
+}
+```
+
+#### Success Response (201 Created):
+```json
+{
+  "success": true,
+  "status": 201,
+  "message": "Daily menu created successfully",
+  "data": {
+    "id": "675menu12345678901234567",
+    "messId": "675abc123456789012345678",
+    "menuDate": "2026-11-10",
+    "items": [
+      {
+        "id": "c1f72b9a-4c2e-4b68-bfa9-1e3c88a8d001",
+        "mealType": "BREAKFAST",
+        "foodName": "Aloo Paratha",
+        "description": "Stuffed potato flatbread served with fresh curd and pickle"
+      },
+      {
+        "id": "c1f72b9a-4c2e-4b68-bfa9-1e3c88a8d002",
+        "mealType": "LUNCH",
+        "foodName": "Dal Tadka",
+        "description": "Yellow lentils tempered with garlic and cumin"
+      },
+      {
+        "id": "c1f72b9a-4c2e-4b68-bfa9-1e3c88a8d003",
+        "mealType": "DINNER",
+        "foodName": "Paneer Butter Masala",
+        "description": "Cottage cheese cubes in rich tomato gravy"
+      }
+    ],
+    "createdAt": "2026-11-10T12:00:00Z",
+    "updatedAt": "2026-11-10T12:00:00Z"
+  }
+}
+```
+
+---
+
+### 2.2 Update Daily Menu
+- **Endpoint:** `PUT /api/menus/{menuId}`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`OWNER` only)
+- **Success Code:** `200 OK`
+- **Response Type:** `ApiResponse<MenuResponse>`
+
+#### Request Body:
+```json
+{
+  "items": [
+    {
+      "mealType": "BREAKFAST",
+      "foodName": "Poha & Tea",
+      "description": "Flattened rice tempered with mustard seeds and curry leaves"
+    },
+    {
+      "mealType": "LUNCH",
+      "foodName": "Rajma Chawal",
+      "description": "Kidney bean curry with steamed basmati rice"
+    }
+  ]
+}
+```
+
+---
+
+### 2.3 Add Food Item to Menu
+- **Endpoint:** `POST /api/menus/{menuId}/items`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`OWNER` only)
+- **Success Code:** `201 Created`
+- **Response Type:** `ApiResponse<MenuResponse>`
+
+#### Request Body:
+```json
+{
+  "mealType": "DINNER",
+  "foodName": "Mix Veg Curry",
+  "description": "Seasonal vegetables cooked in traditional spices"
+}
+```
+
+---
+
+### 2.4 Update Food Item
+- **Endpoint:** `PUT /api/menus/{menuId}/items/{itemId}`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`OWNER` only)
+- **Success Code:** `200 OK`
+- **Response Type:** `ApiResponse<MenuResponse>`
+
+#### Request Body:
+```json
+{
+  "mealType": "DINNER",
+  "foodName": "Shahi Paneer",
+  "description": "Royal cottage cheese in cashew cream sauce"
+}
+```
+
+---
+
+### 2.5 Delete Food Item
+- **Endpoint:** `DELETE /api/menus/{menuId}/items/{itemId}`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`OWNER` only)
+- **Success Code:** `200 OK`
+- **Response Type:** `ApiResponse<MenuResponse>`
+
+---
+
+### 2.6 Delete Daily Menu
+- **Endpoint:** `DELETE /api/menus/{menuId}`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`OWNER` only)
+- **Success Code:** `200 OK`
+- **Response Type:** `ApiResponse<Void>`
+
+---
+
+### 2.7 Get Owner Weekly Menu View
+- **Endpoint:** `GET /api/menus/owner/mess/{messId}/weekly?startDate={yyyy-MM-dd}`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`OWNER` only)
+- **Success Code:** `200 OK`
+- **Response Type:** `ApiResponse<WeeklyMenuResponse>`
+
+#### Success Response:
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Weekly menu fetched successfully",
+  "data": {
+    "messId": "675abc123456789012345678",
+    "messName": "Annapurna Mess",
+    "startDate": "2026-11-10",
+    "endDate": "2026-11-16",
+    "menus": [
+      {
+        "menuId": "675menu12345678901234567",
+        "messId": "675abc123456789012345678",
+        "menuDate": "2026-11-10",
+        "breakfast": [
+          {
+            "id": "c1f72b9a-4c2e-4b68-bfa9-1e3c88a8d001",
+            "mealType": "BREAKFAST",
+            "foodName": "Aloo Paratha",
+            "description": "Stuffed potato flatbread"
+          }
+        ],
+        "lunch": [
+          {
+            "id": "c1f72b9a-4c2e-4b68-bfa9-1e3c88a8d002",
+            "mealType": "LUNCH",
+            "foodName": "Dal Tadka",
+            "description": "Yellow lentils tempered with spices"
+          }
+        ],
+        "dinner": [
+          {
+            "id": "c1f72b9a-4c2e-4b68-bfa9-1e3c88a8d003",
+            "mealType": "DINNER",
+            "foodName": "Shahi Paneer",
+            "description": "Royal cottage cheese in cashew cream"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+---
+
+### 2.8 Get Public Today's Menu
+- **Endpoint:** `GET /api/menus/mess/{messId}/today`
+- **Authentication:** `Public (No token required)`
+- **Success Code:** `200 OK`
+- **Response Type:** `ApiResponse<DailyMenuResponse>`
+
+---
+
+### 2.9 Get Public Weekly Menu View
+- **Endpoint:** `GET /api/menus/mess/{messId}/weekly?startDate={yyyy-MM-dd}`
+- **Authentication:** `Public (No token required)`
+- **Success Code:** `200 OK`
+- **Response Type:** `ApiResponse<WeeklyMenuResponse>`
+
+
+---
+
+## Module 8: Subscription Management
+
+### Core Architectural Invariants
+1. Only authenticated customers (`Role.USER`, `AccountStatus.ACTIVE`) can subscribe or cancel.
+2. Mess eligibility: target mess must be `VerificationStatus.APPROVED` and `MessStatus.ACTIVE`.
+3. Concurrency & duplicate prevention: maximum of 1 `ACTIVE` subscription per user per mess.
+4. Backend-derived dates: `startDate` defaults to today; `endDate` is calculated from duration.
+5. Non-destructive cancellation: subscription status updated to `CANCELLED`.
+6. Multi-tenant IDOR protection: customers view only their own subscriptions; owners view only subscriptions for their own messes; administrators have global oversight.
+
+| Method | Endpoint | Allowed Roles | Description |
+|---|---|---|---|
+| `POST` | `/api/subscriptions` | `USER` | Subscribe to an approved and active mess facility |
+| `GET` | `/api/subscriptions/me` | `USER` | Get all subscriptions belonging to current customer |
+| `GET` | `/api/subscriptions/{subscriptionId}` | `USER`, `ADMIN` | View detailed subscription information |
+| `PATCH` | `/api/subscriptions/{subscriptionId}/cancel` | `USER` | Cancel customer's own active subscription |
+| `GET` | `/api/subscriptions/owner/mess/{messId}` | `OWNER` | View subscriptions and subscriber details for owner's mess |
+| `GET` | `/api/admin/subscriptions` | `ADMIN` | Platform-wide subscription audit and monitoring |
+
+---
+
+### 2.1 Subscribe to a Mess
+- **Endpoint:** `POST /api/subscriptions`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`USER` role required)
+- **Success Code:** `201 Created`
+- **Response Envelope:** `ApiResponse<SubscriptionResponse>`
+
+#### Request Body:
+```json
+{
+  "messId": "67320b98f1234567890abcde",
+  "planId": "monthly"
+}
+```
+
+#### Optional Plan Selection:
+```json
+{
+  "messId": "67320b98f1234567890abcde",
+  "planId": "quarterly"
+}
+```
+
+#### Success Response (201 Created):
+```json
+{
+  "success": true,
+  "status": 201,
+  "message": "Subscription created successfully",
+  "data": {
+    "id": "6733a1b2c3d4e5f678901234",
+    "userId": "67320a11f1234567890abcde",
+    "userName": "Rohan Sharma",
+    "userEmail": "rohan.sharma@example.com",
+    "userPhone": "9876543210",
+    "messId": "67320b98f1234567890abcde",
+    "messName": "Shree Krishna Bhojanalaya",
+    "planId": "monthly",
+    "planName": "Monthly Plan",
+    "durationDays": 30,
+    "price": 3200.0,
+    "startDate": "2026-11-12",
+    "endDate": "2026-12-12",
+    "status": "ACTIVE",
+    "createdAt": "2026-11-12T18:00:00Z",
+    "updatedAt": "2026-11-12T18:00:00Z"
+  },
+  "timestamp": "2026-11-12T23:30:00"
+}
+```
+
+#### Error Responses:
+- `400 Bad Request`: Mess is not approved or inactive, or duration <= 0.
+- `401 Unauthorized`: Token missing or invalid.
+- `403 Forbidden`: Account is blocked, inactive, or role is not `USER`.
+- `404 Not Found`: Mess not found.
+- `409 Conflict`: User already has an active subscription to this mess.
+
+---
+
+### 2.2 Get My Subscriptions
+- **Endpoint:** `GET /api/subscriptions/me`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`USER` role required)
+- **Query Parameters:** `status` (optional: `ACTIVE`, `CANCELLED`, `EXPIRED`)
+- **Success Code:** `200 OK`
+
+#### Success Response (200 OK):
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Subscriptions fetched successfully",
+  "data": [
+    {
+      "id": "6733a1b2c3d4e5f678901234",
+      "userId": "67320a11f1234567890abcde",
+      "messId": "67320b98f1234567890abcde",
+      "messName": "Shree Krishna Bhojanalaya",
+      "planId": "monthly",
+      "planName": "Monthly Plan",
+      "durationDays": 30,
+      "price": 3200.0,
+      "startDate": "2026-11-12",
+      "endDate": "2026-12-12",
+      "status": "ACTIVE",
+      "createdAt": "2026-11-12T18:00:00Z",
+      "updatedAt": "2026-11-12T18:00:00Z"
+    }
+  ],
+  "timestamp": "2026-11-12T23:31:00"
+}
+```
+
+---
+
+### 2.3 Get Subscription Details by ID
+- **Endpoint:** `GET /api/subscriptions/{subscriptionId}`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`USER` subscriber or `ADMIN`)
+- **Path Variable:** `subscriptionId`
+- **Success Code:** `200 OK`
+
+#### Success Response (200 OK):
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Subscription retrieved successfully",
+  "data": {
+    "id": "6733a1b2c3d4e5f678901234",
+    "userId": "67320a11f1234567890abcde",
+    "userName": "Rohan Sharma",
+    "userEmail": "rohan.sharma@example.com",
+    "userPhone": "9876543210",
+    "messId": "67320b98f1234567890abcde",
+    "messName": "Shree Krishna Bhojanalaya",
+    "planId": "monthly",
+    "planName": "Monthly Plan",
+    "durationDays": 30,
+    "price": 3200.0,
+    "startDate": "2026-11-12",
+    "endDate": "2026-12-12",
+    "status": "ACTIVE",
+    "createdAt": "2026-11-12T18:00:00Z",
+    "updatedAt": "2026-11-12T18:00:00Z"
+  },
+  "timestamp": "2026-11-12T23:32:00"
+}
+```
+
+#### Error Responses:
+- `403 Forbidden`: User attempts to view a subscription belonging to someone else.
+- `404 Not Found`: Subscription not found.
+
+---
+
+### 2.4 Cancel Active Subscription
+- **Endpoint:** `PATCH /api/subscriptions/{subscriptionId}/cancel`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`USER` role required)
+- **Path Variable:** `subscriptionId`
+- **Success Code:** `200 OK`
+
+#### Success Response (200 OK):
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Subscription cancelled successfully",
+  "data": {
+    "id": "6733a1b2c3d4e5f678901234",
+    "userId": "67320a11f1234567890abcde",
+    "userName": "Rohan Sharma",
+    "userEmail": "rohan.sharma@example.com",
+    "userPhone": "9876543210",
+    "messId": "67320b98f1234567890abcde",
+    "messName": "Shree Krishna Bhojanalaya",
+    "planId": "monthly",
+    "planName": "Monthly Plan",
+    "durationDays": 30,
+    "price": 3200.0,
+    "startDate": "2026-11-12",
+    "endDate": "2026-12-12",
+    "status": "CANCELLED",
+    "createdAt": "2026-11-12T18:00:00Z",
+    "updatedAt": "2026-11-12T18:05:00Z",
+    "cancelledAt": "2026-11-12T18:05:00Z"
+  },
+  "timestamp": "2026-11-12T23:35:00"
+}
+```
+
+#### Error Responses:
+- `400 Bad Request`: Subscription is already cancelled or expired.
+- `403 Forbidden`: User attempts to cancel another customer's subscription.
+- `404 Not Found`: Subscription not found.
+
+---
+
+### 2.5 Get Subscriptions for Owner's Mess
+- **Endpoint:** `GET /api/subscriptions/owner/mess/{messId}`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`OWNER` role required)
+- **Path Variable:** `messId`
+- **Query Parameters:** `status` (optional: `ACTIVE`, `CANCELLED`, `EXPIRED`)
+- **Success Code:** `200 OK`
+
+#### Success Response (200 OK):
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Owner mess subscriptions fetched successfully",
+  "data": [
+    {
+      "id": "6733a1b2c3d4e5f678901234",
+      "userId": "67320a11f1234567890abcde",
+      "userName": "Rohan Sharma",
+      "userEmail": "rohan.sharma@example.com",
+      "userPhone": "9876543210",
+      "messId": "67320b98f1234567890abcde",
+      "messName": "Shree Krishna Bhojanalaya",
+      "planId": "monthly",
+      "planName": "Monthly Plan",
+      "durationDays": 30,
+      "price": 3200.0,
+      "startDate": "2026-11-12",
+      "endDate": "2026-12-12",
+      "status": "ACTIVE",
+      "createdAt": "2026-11-12T18:00:00Z",
+      "updatedAt": "2026-11-12T18:00:00Z"
+    }
+  ],
+  "timestamp": "2026-11-12T23:36:00"
+}
+```
+
+#### Error Responses:
+- `403 Forbidden`: Mess does not belong to the authenticated owner.
+- `404 Not Found`: Mess not found.
+
+---
+
+### 2.6 Get All Platform Subscriptions (Admin)
+- **Endpoint:** `GET /api/admin/subscriptions`
+- **Authentication:** `Bearer <JWT_TOKEN>` (`ADMIN` role required)
+- **Query Parameters:** `status` (optional: `ACTIVE`, `CANCELLED`, `EXPIRED`)
+- **Success Code:** `200 OK`
+
+#### Success Response (200 OK):
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "All platform subscriptions fetched successfully",
+  "data": [
+    {
+      "id": "6733a1b2c3d4e5f678901234",
+      "userId": "67320a11f1234567890abcde",
+      "userName": "Rohan Sharma",
+      "userEmail": "rohan.sharma@example.com",
+      "userPhone": "9876543210",
+      "messId": "67320b98f1234567890abcde",
+      "messName": "Shree Krishna Bhojanalaya",
+      "planId": "monthly",
+      "planName": "Monthly Plan",
+      "durationDays": 30,
+      "price": 3200.0,
+      "startDate": "2026-11-12",
+      "endDate": "2026-12-12",
+      "status": "ACTIVE",
+      "createdAt": "2026-11-12T18:00:00Z",
+      "updatedAt": "2026-11-12T18:00:00Z"
+    }
+  ],
+  "timestamp": "2026-11-12T23:37:00"
+}
+```
+
+#### Error Responses:
+- `403 Forbidden`: Non-admin caller attempting administrative inspection.
+
 
 ---
 

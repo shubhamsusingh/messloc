@@ -64,11 +64,12 @@ public class MessController {
     @GetMapping("/owner/messes")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ApiResponse<List<MessResponse>>> getOwnerMesses(
+            @RequestParam(required = false) String status,
             @AuthenticationPrincipal CustomUserDetails userDetails,
             Authentication authentication) {
         
         String ownerId = resolveOwnerId(userDetails, authentication);
-        List<MessResponse> response = messService.getOwnerMesses(ownerId);
+        List<MessResponse> response = messService.getOwnerMesses(ownerId, status);
         return ResponseEntity.ok(ApiResponse.success("Messes fetched successfully", response));
     }
 

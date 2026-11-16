@@ -232,5 +232,64 @@ class MessServiceTest {
         assertThrows(MessNotFoundException.class, () ->
                 messService.getPublicMess("m-pending"));
     }
+
+    // ==========================================
+    // OWNER MESS STATUS FILTERING TESTS
+    // ==========================================
+
+    @Test
+    void testGetOwnerMesses_AllStatusesReturnedByDefault() {
+        Mess m1 = Mess.builder().id("m1").ownerId("o-101").name("Mess 1").verificationStatus(VerificationStatus.APPROVED).status(MessStatus.ACTIVE).build();
+        Mess m2 = Mess.builder().id("m2").ownerId("o-101").name("Mess 2").verificationStatus(VerificationStatus.PENDING).status(MessStatus.ACTIVE).build();
+        Mess m3 = Mess.builder().id("m3").ownerId("o-101").name("Mess 3").verificationStatus(VerificationStatus.REJECTED).status(MessStatus.INACTIVE).build();
+
+        when(messRepository.findByOwnerId("o-101")).thenReturn(List.of(m1, m2, m3));
+
+        List<MessResponse> responses = messService.getOwnerMesses("o-101");
+
+        assertEquals(3, responses.size());
+    }
+
+    @Test
+    void testGetOwnerMesses_FilterByPendingStatus() {
+        Mess m1 = Mess.builder().id("m1").ownerId("o-101").name("Mess 1").verificationStatus(VerificationStatus.APPROVED).status(MessStatus.ACTIVE).build();
+        Mess m2 = Mess.builder().id("m2").ownerId("o-101").name("Mess 2").verificationStatus(VerificationStatus.PENDING).status(MessStatus.ACTIVE).build();
+
+        when(messRepository.findByOwnerId("o-101")).thenReturn(List.of(m1, m2));
+
+        List<MessResponse> responses = messService.getOwnerMesses("o-101", "PENDING");
+
+        assertEquals(1, responses.size());
+        assertEquals("m2", responses.get(0).getId());
+        assertEquals(VerificationStatus.PENDING, responses.get(0).getVerificationStatus());
+    }
+
+    @Test
+    void testGetOwnerMesses_FilterByApprovedStatus() {
+        Mess m1 = Mess.builder().id("m1").ownerId("o-101").name("Mess 1").verificationStatus(VerificationStatus.APPROVED).status(MessStatus.ACTIVE).build();
+        Mess m2 = Mess.builder().id("m2").ownerId("o-101").name("Mess 2").verificationStatus(VerificationStatus.PENDING).status(MessStatus.ACTIVE).build();
+
+        when(messRepository.findByOwnerId("o-101")).thenReturn(List.of(m1, m2));
+
+        List<MessResponse> responses = messService.getOwnerMesses("o-101", "APPROVED");
+
+        assertEquals(1, responses.size());
+        assertEquals("m1", responses.get(0).getId());
+        assertEquals(VerificationStatus.APPROVED, responses.get(0).getVerificationStatus());
+    }
+
+    @Test
+    void testGetOwnerMesses_FilterByRejectedStatus() {
+        Mess m1 = Mess.builder().id("m1").ownerId("o-101").name("Mess 1").verificationStatus(VerificationStatus.APPROVED).status(MessStatus.ACTIVE).build();
+        Mess m3 = Mess.builder().id("m3").ownerId("o-101").name("Mess 3").verificationStatus(VerificationStatus.REJECTED).status(MessStatus.INACTIVE).build();
+
+        when(messRepository.findByOwnerId("o-101")).thenReturn(List.of(m1, m3));
+
+        List<MessResponse> responses = messService.getOwnerMesses("o-101", "REJECTED");
+
+        assertEquals(1, responses.size());
+        assertEquals("m3", responses.get(0).getId());
+        assertEquals(VerificationStatus.REJECTED, responses.get(0).getVerificationStatus());
+    }
 }
 

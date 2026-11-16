@@ -14,6 +14,7 @@ public interface MessService {
     // OWNER Operations
     MessResponse createMess(CreateMessRequest request, String ownerId);
     List<MessResponse> getOwnerMesses(String ownerId);
+    List<MessResponse> getOwnerMesses(String ownerId, String status);
     MessResponse getOwnerMess(String id, String ownerId);
     MessResponse updateMess(String id, UpdateMessRequest request, String ownerId);
     void deactivateMess(String id, String ownerId);

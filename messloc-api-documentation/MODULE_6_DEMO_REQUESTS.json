@@ -1,0 +1,113 @@
+{
+  "module": "Module 6: Subscription Management",
+  "version": "1.0.0",
+  "description": "Ready-to-use sample JSON payloads and demo requests for testing the MessLoc subscription module.",
+  "requests": {
+    "1_subscribe_default_monthly": {
+      "method": "POST",
+      "url": "{{baseUrl}}/api/subscriptions",
+      "role": "USER",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{userToken}}"
+      },
+      "body": {
+        "messId": "{{messId}}",
+        "planId": "monthly"
+      }
+    },
+    "2_subscribe_quarterly_plan": {
+      "method": "POST",
+      "url": "{{baseUrl}}/api/subscriptions",
+      "role": "USER",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{userToken}}"
+      },
+      "body": {
+        "messId": "{{messId}}",
+        "planId": "quarterly"
+      }
+    },
+    "3_subscribe_custom_plan": {
+      "method": "POST",
+      "url": "{{baseUrl}}/api/subscriptions",
+      "role": "USER",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {{userToken}}"
+      },
+      "body": {
+        "messId": "{{messId}}",
+        "planId": "custom",
+        "planName": "Semester Plan",
+        "durationDays": 120
+      }
+    },
+    "4_get_my_subscriptions": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/subscriptions/me",
+      "role": "USER",
+      "headers": {
+        "Authorization": "Bearer {{userToken}}"
+      }
+    },
+    "5_get_my_active_subscriptions": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/subscriptions/me?status=ACTIVE",
+      "role": "USER",
+      "headers": {
+        "Authorization": "Bearer {{userToken}}"
+      }
+    },
+    "6_get_subscription_by_id": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}",
+      "role": "USER or ADMIN",
+      "headers": {
+        "Authorization": "Bearer {{userToken}}"
+      }
+    },
+    "7_cancel_subscription": {
+      "method": "PATCH",
+      "url": "{{baseUrl}}/api/subscriptions/{{subscriptionId}}/cancel",
+      "role": "USER",
+      "headers": {
+        "Authorization": "Bearer {{userToken}}"
+      }
+    },
+    "8_owner_get_mess_subscriptions": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/subscriptions/owner/mess/{{messId}}",
+      "role": "OWNER",
+      "headers": {
+        "Authorization": "Bearer {{ownerToken}}"
+      }
+    },
+    "9_owner_get_mess_active_subscriptions": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/subscriptions/owner/mess/{{messId}}?status=ACTIVE",
+      "role": "OWNER",
+      "headers": {
+        "Authorization": "Bearer {{ownerToken}}"
+      }
+    },
+    "10_admin_get_all_subscriptions": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/admin/subscriptions",
+      "role": "ADMIN",
+      "headers": {
+        "Authorization": "Bearer {{adminToken}}"
+      }
+    },
+    "11_admin_get_active_subscriptions": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/admin/subscriptions?status=ACTIVE",
+      "role": "ADMIN",
+      "headers": {
+        "Authorization": "Bearer {{adminToken}}"
+      }
+    }
+  }
+}
+

@@ -1,10 +1,14 @@
 package com.MessLoc.service;
 
+import com.MessLoc.dto.request.ChangePasswordRequest;
+import com.MessLoc.dto.request.ForgotPasswordRequest;
 import com.MessLoc.dto.request.OwnerSignupRequest;
+import com.MessLoc.dto.request.ResetPasswordRequest;
 import com.MessLoc.dto.request.SigninRequest;
 import com.MessLoc.dto.request.UserSignupRequest;
 import com.MessLoc.dto.response.AuthResponse;
 import com.MessLoc.entity.OwnerProfile;
+import com.MessLoc.entity.PasswordResetToken;
 import com.MessLoc.entity.User;
 import com.MessLoc.enums.AccountStatus;
 import com.MessLoc.enums.Role;
@@ -12,11 +16,15 @@ import com.MessLoc.exception.AccountBlockedException;
 import com.MessLoc.exception.AccountInactiveException;
 import com.MessLoc.exception.EmailAlreadyExistsException;
 import com.MessLoc.exception.InvalidCredentialsException;
+import com.MessLoc.exception.InvalidResetTokenException;
 import com.MessLoc.exception.OwnerPendingException;
+import com.MessLoc.exception.RateLimitExceededException;
 import com.MessLoc.repository.OwnerProfileRepository;
+import com.MessLoc.repository.PasswordResetTokenRepository;
 import com.MessLoc.repository.UserRepository;
 import com.MessLoc.security.CustomUserDetails;
 import com.MessLoc.security.JwtService;
+import com.MessLoc.service.EmailService;
 import com.MessLoc.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +43,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.mockito.ArgumentCaptor;
 import org.springframework.dao.DuplicateKeyException;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,6 +68,12 @@ class AuthServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Mock
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Mock
+    private EmailService emailService;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -307,5 +323,223 @@ class AuthServiceTest {
 
         assertThrows(com.MessLoc.exception.ResourceNotFoundException.class,
                 () -> authService.getCurrentUser("nonexistent@example.com"));
+    }
+
+    // ==========================================
+    // CHANGE PASSWORD TESTS
+    // ==========================================
+
+    @Test
+    void testChangePassword_Success() {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("OldPass123@")
+                .newPassword("NewPass456@")
+                .confirmPassword("NewPass456@")
+                .build();
+
+        when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
+        when(passwordEncoder.matches("OldPass123@", sampleUser.getPassword())).thenReturn(true);
+        when(passwordEncoder.matches("NewPass456@", sampleUser.getPassword())).thenReturn(false);
+        when(passwordEncoder.encode("NewPass456@")).thenReturn("encoded_new_pass");
+
+        authService.changePassword(request, "shivam@example.com");
+
+        assertEquals("encoded_new_pass", sampleUser.getPassword());
+        verify(userRepository, times(1)).save(sampleUser);
+    }
+
+    @Test
+    void testChangePassword_IncorrectCurrentPassword_ThrowsInvalidCredentialsException() {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("WrongPass123@")
+                .newPassword("NewPass456@")
+                .confirmPassword("NewPass456@")
+                .build();
+
+        when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
+        when(passwordEncoder.matches("WrongPass123@", sampleUser.getPassword())).thenReturn(false);
+
+        assertThrows(InvalidCredentialsException.class, () ->
+                authService.changePassword(request, "shivam@example.com"));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testChangePassword_PasswordMismatch_ThrowsIllegalArgumentException() {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("OldPass123@")
+                .newPassword("NewPass456@")
+                .confirmPassword("DifferentPass789@")
+                .build();
+
+        when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
+        when(passwordEncoder.matches("OldPass123@", sampleUser.getPassword())).thenReturn(true);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                authService.changePassword(request, "shivam@example.com"));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testChangePassword_SamePassword_ThrowsIllegalArgumentException() {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("OldPass123@")
+                .newPassword("OldPass123@")
+                .confirmPassword("OldPass123@")
+                .build();
+
+        when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
+        when(passwordEncoder.matches("OldPass123@", sampleUser.getPassword())).thenReturn(true);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                authService.changePassword(request, "shivam@example.com"));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testChangePassword_WeakPassword_ThrowsIllegalArgumentException() {
+        ChangePasswordRequest request = ChangePasswordRequest.builder()
+                .currentPassword("OldPass123@")
+                .newPassword("weak")
+                .confirmPassword("weak")
+                .build();
+
+        when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
+        when(passwordEncoder.matches("OldPass123@", sampleUser.getPassword())).thenReturn(true);
+        when(passwordEncoder.matches("weak", sampleUser.getPassword())).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                authService.changePassword(request, "shivam@example.com"));
+        verify(userRepository, never()).save(any());
+    }
+
+    // ==========================================
+    // FORGOT PASSWORD TESTS
+    // ==========================================
+
+    @Test
+    void testForgotPassword_RegisteredEmail_GeneratesTokenAndCallsEmailService() {
+        ForgotPasswordRequest request = ForgotPasswordRequest.builder()
+                .email("shivam@example.com")
+                .build();
+
+        when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
+        when(passwordResetTokenRepository.countByUserIdAndCreatedAtAfter(eq("user-1"), any())).thenReturn(0);
+        when(passwordResetTokenRepository.findByUserIdAndUsedFalse("user-1")).thenReturn(List.of());
+
+        authService.forgotPassword(request);
+
+        verify(passwordResetTokenRepository, times(1)).save(any(PasswordResetToken.class));
+        verify(emailService, times(1)).sendPasswordResetEmail(eq("shivam@example.com"), eq("Shivam Kumar"), anyString());
+    }
+
+    @Test
+    void testForgotPassword_UnregisteredEmail_ReturnsSilentlyWithoutSendingEmail() {
+        ForgotPasswordRequest request = ForgotPasswordRequest.builder()
+                .email("unknown@example.com")
+                .build();
+
+        when(userRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
+
+        assertDoesNotThrow(() -> authService.forgotPassword(request));
+        verify(passwordResetTokenRepository, never()).save(any());
+        verify(emailService, never()).sendPasswordResetEmail(any(), any(), any());
+    }
+
+    @Test
+    void testForgotPassword_RateLimitExceeded_ThrowsRateLimitExceededException() {
+        ForgotPasswordRequest request = ForgotPasswordRequest.builder()
+                .email("shivam@example.com")
+                .build();
+
+        when(userRepository.findByEmail("shivam@example.com")).thenReturn(Optional.of(sampleUser));
+        when(passwordResetTokenRepository.countByUserIdAndCreatedAtAfter(eq("user-1"), any())).thenReturn(3);
+
+        assertThrows(RateLimitExceededException.class, () -> authService.forgotPassword(request));
+        verify(passwordResetTokenRepository, never()).save(any());
+        verify(emailService, never()).sendPasswordResetEmail(any(), any(), any());
+    }
+
+    // ==========================================
+    // RESET PASSWORD TESTS
+    // ==========================================
+
+    @Test
+    void testResetPassword_Success() {
+        ResetPasswordRequest request = ResetPasswordRequest.builder()
+                .token("rawTokenHex1234567890abcdef")
+                .newPassword("FreshPassword123@")
+                .confirmPassword("FreshPassword123@")
+                .build();
+
+        PasswordResetToken resetToken = PasswordResetToken.builder()
+                .id("token-1")
+                .userId("user-1")
+                .tokenHash("someHash")
+                .expiryDate(Instant.now().plusSeconds(600))
+                .used(false)
+                .build();
+
+        when(passwordResetTokenRepository.findByTokenHashAndUsedFalse(anyString())).thenReturn(Optional.of(resetToken));
+        when(userRepository.findById("user-1")).thenReturn(Optional.of(sampleUser));
+        when(passwordEncoder.matches("FreshPassword123@", sampleUser.getPassword())).thenReturn(false);
+        when(passwordEncoder.encode("FreshPassword123@")).thenReturn("new_encoded_password");
+
+        authService.resetPassword(request);
+
+        assertTrue(resetToken.isUsed());
+        assertNotNull(resetToken.getUsedAt());
+        assertEquals("new_encoded_password", sampleUser.getPassword());
+        verify(userRepository, times(1)).save(sampleUser);
+    }
+
+    @Test
+    void testResetPassword_InvalidToken_ThrowsInvalidResetTokenException() {
+        ResetPasswordRequest request = ResetPasswordRequest.builder()
+                .token("invalidOrConsumedToken")
+                .newPassword("FreshPassword123@")
+                .confirmPassword("FreshPassword123@")
+                .build();
+
+        when(passwordResetTokenRepository.findByTokenHashAndUsedFalse(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(InvalidResetTokenException.class, () -> authService.resetPassword(request));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testResetPassword_ExpiredToken_ThrowsInvalidResetTokenException() {
+        ResetPasswordRequest request = ResetPasswordRequest.builder()
+                .token("expiredToken12345")
+                .newPassword("FreshPassword123@")
+                .confirmPassword("FreshPassword123@")
+                .build();
+
+        PasswordResetToken expiredToken = PasswordResetToken.builder()
+                .id("token-exp")
+                .userId("user-1")
+                .tokenHash("someHash")
+                .expiryDate(Instant.now().minusSeconds(60))
+                .used(false)
+                .build();
+
+        when(passwordResetTokenRepository.findByTokenHashAndUsedFalse(anyString())).thenReturn(Optional.of(expiredToken));
+
+        assertThrows(InvalidResetTokenException.class, () -> authService.resetPassword(request));
+        assertTrue(expiredToken.isUsed());
+        verify(passwordResetTokenRepository, times(1)).save(expiredToken);
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void testResetPassword_PasswordMismatch_ThrowsIllegalArgumentException() {
+        ResetPasswordRequest request = ResetPasswordRequest.builder()
+                .token("anyToken")
+                .newPassword("FreshPassword123@")
+                .confirmPassword("MismatchedPassword123@")
+                .build();
+
+        assertThrows(IllegalArgumentException.class, () -> authService.resetPassword(request));
+        verify(passwordResetTokenRepository, never()).findByTokenHashAndUsedFalse(any());
     }
 }
