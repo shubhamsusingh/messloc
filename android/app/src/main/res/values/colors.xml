@@ -24,11 +24,28 @@
     <color name="input_background">#FFFFFF</color>
     <color name="input_border">#CBD5E1</color>
 
-    <!-- disabled -->
-    <color name="disabled">#94A3B8</color>
-
     <!-- Status -->
     <color name="error">#DC2626</color>
     <color name="success">#15803D</color>
+
+    <color name="primary_dark">#EA580C</color>
+    <color name="primary_soft">#FFF4EA</color>
+    <color name="divider">#EEF2F6</color>
+    <color name="card_surface">#FFFFFF</color>
+    <color name="card_stroke">#E8EDF3</color>
+    <color name="error_soft">#FEF2F2</color>
+    <color name="error_stroke">#FECACA</color>
+    <color name="gradient_start">#FB923C</color>
+    <color name="gradient_end">#EA580C</color>
+
+    <color name="info_soft">#E0F2FE</color>
+    <color name="info_text">#075985</color>
+    <color name="link">#2563EB</color>
+    <color name="accent_amber">#D97706</color>
+    <color name="accent_amber_soft">#FEF3C7</color>
+    <color name="accent_indigo_soft">#E0E7FF</color>
+    <color name="accent_green_soft">#DCFCE7</color>
+
+    <color name="card_selected_background">#E8F0FE</color>
 
 </resources>

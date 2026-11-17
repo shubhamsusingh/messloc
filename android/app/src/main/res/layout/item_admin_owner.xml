@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_card_surface"
+    android:elevation="2dp"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvOwnerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Owner Name"
+        android:textColor="#172554"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvOwnerEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Email"
+        android:textColor="#475569"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvOwnerPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Phone"
+        android:textColor="#475569"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvOwnerCity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="City"
+        android:textColor="#475569"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvOwnerStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="PENDING"
+        android:textColor="#D97706"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal">
+        <Button
+        android:id="@+id/btnBlockOwner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:backgroundTint="@color/error"
+        android:text="Block"
+        android:textAllCaps="false" />
+
+
+        <Button
+            android:id="@+id/btnVerifyOwner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:text="Verify"
+            android:textAllCaps="false" />
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

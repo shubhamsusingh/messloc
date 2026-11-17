@@ -26,6 +26,18 @@ public class AuthViewModel extends AndroidViewModel {
     public MutableLiveData<String> errorMessage = new MutableLiveData<>();
     public MutableLiveData<AuthResponse> authResult = new MutableLiveData<>();
 
+    public MutableLiveData<Boolean> getLoading() {
+        return loading;
+    }
+
+    public MutableLiveData<String> getErrorMessage() {
+        return errorMessage;
+    }
+
+    public MutableLiveData<AuthResponse> getAuthResult() {
+        return authResult;
+    }
+
     public AuthViewModel(@NonNull Application application) {
         super(application);
         repository = new AuthRepository(application);
@@ -38,24 +50,30 @@ public class AuthViewModel extends AndroidViewModel {
         String userPhone = phone.getValue();
         String userPassword = password.getValue();
 
-        if (isEmpty(userName) || isEmpty(userEmail)
-                || isEmpty(userPhone) || isEmpty(userPassword)) {
+        RegisterRequest request = new RegisterRequest(
+                userName == null ? "" : userName.trim(),
+                userEmail == null ? "" : userEmail.trim(),
+                userPhone == null ? "" : userPhone.trim(),
+                userPassword,
+                null, null, null, null, null
+        );
 
-            errorMessage.setValue("Please fill all fields");
+        register(request);
+    }
+
+
+    public void register(RegisterRequest request) {
+        if (request == null) {
+            errorMessage.setValue("Invalid registration details.");
             return;
         }
 
+        loadingMessage.setValue("Creating your personal account...");
         loading.setValue(true);
-
-        RegisterRequest request = new RegisterRequest(
-                userName.trim(),
-                userEmail.trim(),
-                userPhone.trim(),
-                userPassword
-        );
+        errorMessage.setValue(null);
+        authResult.setValue(null);
 
         repository.register(request, new AuthRepository.AuthCallback() {
-
             @Override
             public void onSuccess(AuthResponse response) {
                 loading.postValue(false);
@@ -70,6 +88,7 @@ public class AuthViewModel extends AndroidViewModel {
         });
     }
 
+
     public void login() {
 
         String userEmail = email.getValue();
@@ -80,7 +99,7 @@ public class AuthViewModel extends AndroidViewModel {
             return;
         }
 
-        loadingMessage.postValue("Logging you in...");
+        loadingMessage.setValue("Logging you in...");
         loading.setValue(true);
 
         LoginRequest request = new LoginRequest(
@@ -92,14 +111,14 @@ public class AuthViewModel extends AndroidViewModel {
 
             @Override
             public void onSuccess(AuthResponse response) {
-                loading.postValue(false);
-                authResult.postValue(response);
+                loading.setValue(false);
+                authResult.setValue(response);
             }
 
             @Override
             public void onError(String message) {
-                loading.postValue(false);
-                errorMessage.postValue(message);
+                loading.setValue(false);
+                errorMessage.setValue(message);
             }
         });
     }

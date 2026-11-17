@@ -1,9 +1,10 @@
 package com.example.messloc.data.model;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 import java.util.List;
 
-public class Mess {
+public class Mess implements Serializable {
 
     private String id;
     private String name;
@@ -21,6 +22,12 @@ public class Mess {
     private double monthlyPrice;
     private List<String> facilities;
 
+    @SerializedName("rating")
+    private Double rating;
+
+    @SerializedName("reviewCount")
+    private Integer reviewCount;
+
     public String getId() { return id; }
     public String getName() { return name; }
     public String getAddress() { return address; }
@@ -36,4 +43,12 @@ public class Mess {
     public double getLongitude() { return longitude; }
     public double getMonthlyPrice() { return monthlyPrice; }
     public List<String> getFacilities() { return facilities; }
+
+    public double getRating() {
+        return rating != null && rating > 0 ? rating : 4.5;
+    }
+
+    public int getReviewCount() {
+        return reviewCount != null && reviewCount > 0 ? reviewCount : 85;
+    }
 }

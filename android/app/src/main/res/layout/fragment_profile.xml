@@ -19,53 +19,48 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="20dp"
-            android:paddingTop="10dp"
+            android:paddingTop="12dp"
             android:paddingEnd="20dp"
-            android:paddingBottom="24dp">
+            android:paddingBottom="32dp">
 
-            <!-- Top Header Bar / Profile Title -->
+            <!-- Title -->
             <TextView
                 android:id="@+id/profileTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:paddingStart="0dp"
                 android:paddingTop="8dp"
-                android:paddingEnd="20dp"
-                android:paddingBottom="0dp"
                 android:text="Profile"
                 android:textColor="@color/text_primary"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                />
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/profileDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:paddingStart="0dp"
-                android:paddingTop="0dp"
-                android:paddingEnd="0dp"
+                android:paddingTop="2dp"
                 android:paddingBottom="8dp"
                 android:text="Manage your account and preferences"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                />
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
 
-            <!-- Profile Summary Card -->
+            <!-- Profile Summary Card (gradient hero) -->
             <LinearLayout
                 android:id="@+id/profileSummaryCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/profile_card_background"
+                android:elevation="4dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="20dp">
 
                 <FrameLayout
-                    android:layout_width="80dp"
-                    android:layout_height="80dp">
+                    android:layout_width="84dp"
+                    android:layout_height="84dp">
 
                     <ImageView
                         android:id="@+id/profileImage"
@@ -73,28 +68,29 @@
                         android:layout_height="match_parent"
                         android:background="@drawable/profile_avatar_background"
                         android:contentDescription="Profile picture"
-                        android:padding="18dp"
+                        android:padding="20dp"
                         android:scaleType="centerInside"
                         android:src="@drawable/ic_profile_person"
                         app:tint="@color/white" />
 
                     <ImageView
                         android:id="@+id/changePhotoButton"
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:layout_gravity="bottom|end"
                         android:background="@drawable/profile_camera_background"
                         android:contentDescription="Change profile picture"
-                        android:padding="5dp"
+                        android:elevation="2dp"
+                        android:padding="6dp"
                         android:src="@drawable/ic_profile_camera"
-                        app:tint="@color/primary" />
+                        app:tint="@color/primary_dark" />
 
                 </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -106,7 +102,7 @@
                         android:maxLines="1"
                         android:text="John Doe"
                         android:textColor="@color/text_primary"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -114,6 +110,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        android:alpha="0.9"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="johndoe@gmail.com"
@@ -121,17 +118,19 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/profileRole"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="10dp"
                         android:background="@drawable/profile_role_background"
+                        android:letterSpacing="0.06"
                         android:paddingStart="12dp"
                         android:paddingTop="4dp"
                         android:paddingEnd="12dp"
                         android:paddingBottom="4dp"
                         android:text="USER ACCOUNT"
-                        android:textColor="@color/primary"
-                        android:textSize="12sp"
+                        android:textColor="@color/primary_dark"
+                        android:textSize="11sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -141,11 +140,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="28dp"
                 android:layout_marginBottom="12dp"
+                android:letterSpacing="0.02"
                 android:text="Personal Information"
                 android:textColor="@color/text_primary"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold" />
 
             <!-- Personal Information Card -->
@@ -153,6 +153,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/profile_card_background"
+                android:elevation="2dp"
                 android:orientation="vertical"
                 android:paddingStart="12dp"
                 android:paddingTop="6dp"
@@ -162,7 +163,7 @@
                 <!-- Full Name Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
+                    android:layout_height="68dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="6dp">
@@ -179,7 +180,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="14dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -205,15 +206,13 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:alpha="0.4"
-                    android:background="@color/input_border" />
+                    android:layout_marginStart="58dp"
+                    android:background="@color/divider" />
 
                 <!-- Email Address Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
+                    android:layout_height="68dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="6dp">
@@ -230,7 +229,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="14dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -258,15 +257,13 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:alpha="0.4"
-                    android:background="@color/input_border" />
+                    android:layout_marginStart="58dp"
+                    android:background="@color/divider" />
 
                 <!-- Phone Number Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
+                    android:layout_height="68dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="6dp">
@@ -283,7 +280,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="14dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -309,15 +306,13 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:alpha="0.4"
-                    android:background="@color/input_border" />
+                    android:layout_marginStart="58dp"
+                    android:background="@color/divider" />
 
                 <!-- Address Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="6dp">
@@ -334,7 +329,7 @@
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="14dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -350,8 +345,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:ellipsize="end"
-                            android:maxLines="1"
+                            android:ellipsize="marquee"
+                            android:maxLines="2"
                             android:text="Not added"
                             android:textColor="@color/text_primary"
                             android:textSize="15sp"
@@ -360,46 +355,174 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Mess Owner Section Heading -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="12dp"
+                android:letterSpacing="0.02"
+                android:text="For Mess Owners"
+                android:textColor="@color/text_primary"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <!-- Register Your Mess Card -->
+            <LinearLayout
+                android:id="@+id/registerMessCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/profile_promo_background"
+                android:clickable="true"
+                android:elevation="2dp"
+                android:visibility="gone"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/profile_icon_background"
+                        android:gravity="center"
+                        android:text="+"
+                        android:textColor="@color/primary"
+                        android:textSize="28sp"
+                        android:textStyle="normal" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Own a Mess?"
+                            android:textColor="@color/on_primary_container"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="List your mess on MessLoc and reach more customers."
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/profile_cta_button"
+                    android:gravity="center"
+                    android:text="Register Your Mess  →"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <!-- My Messes Option -->
+            <LinearLayout
+                android:id="@+id/myMessesButton"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/profile_edit_background"
+                android:clickable="true"
+                android:elevation="1dp"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/profile_icon_background"
+                    android:gravity="center"
+                    android:text="≡"
+                    android:textColor="@color/primary"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:text="My Messes"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="View my messes"
+                    android:src="@drawable/ic_profile_arrow"
+                    app:tint="@color/text_secondary" />
+
+            </LinearLayout>
+
             <!-- Account Settings Heading -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="28dp"
                 android:layout_marginBottom="12dp"
+                android:letterSpacing="0.02"
                 android:text="Account Settings"
                 android:textColor="@color/text_primary"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold" />
 
             <!-- Edit Profile Button -->
             <LinearLayout
                 android:id="@+id/editProfileButton"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@drawable/profile_edit_background"
+                android:layout_height="60dp"
+                android:background="@drawable/profile_cta_button"
                 android:clickable="true"
+                android:elevation="3dp"
                 android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
+                android:paddingStart="14dp"
                 android:paddingEnd="16dp">
 
                 <ImageView
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@drawable/profile_edit_icon_bg"
                     android:contentDescription="Edit"
-                    android:padding="7dp"
+                    android:padding="8dp"
                     android:src="@drawable/ic_profile_edit"
                     app:tint="@color/white" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Edit Profile"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@color/white"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -415,29 +538,30 @@
             <LinearLayout
                 android:id="@+id/logoutButton"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/profile_logout_background"
                 android:clickable="true"
                 android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
+                android:paddingStart="14dp"
                 android:paddingEnd="16dp">
 
                 <ImageView
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@drawable/profile_logout_icon_bg"
                     android:contentDescription="Log out"
-                    android:padding="7dp"
+                    android:padding="8dp"
                     android:src="@drawable/ic_profile_logout"
                     app:tint="@color/error" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Log Out"
                     android:textColor="@color/error"
@@ -449,7 +573,7 @@
                     android:layout_height="20dp"
                     android:contentDescription="Open log out"
                     android:src="@drawable/ic_profile_arrow"
-                    app:tint="@color/text_secondary" />
+                    app:tint="@color/error" />
             </LinearLayout>
 
         </LinearLayout>

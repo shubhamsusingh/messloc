@@ -30,10 +30,36 @@ public class MainActivity extends AppCompatActivity {
 
         if (tokenManager.hasValidSession()) {
 
-            startActivity(new Intent(
-                    this,
-                    com.example.messloc.ui.main.MainActivity.class
-            ));
+            String role = tokenManager.getUserRole();
+
+            Intent intent;
+
+            if ("ADMIN".equalsIgnoreCase(role)) {
+
+                intent = new Intent(
+                        this,
+                        com.example.messloc.ui.admin.AdminActivity.class
+                );
+
+            } else if ("USER".equalsIgnoreCase(role)
+                    || "OWNER".equalsIgnoreCase(role)) {
+
+                intent = new Intent(
+                        this,
+                        com.example.messloc.ui.main.MainActivity.class
+                );
+
+            } else {
+
+                tokenManager.clearSession();
+
+                intent = new Intent(
+                        this,
+                        LoginActivity.class
+                );
+            }
+
+            startActivity(intent);
 
         } else {
 

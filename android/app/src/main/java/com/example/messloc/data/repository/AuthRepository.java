@@ -20,6 +20,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import android.util.Log;
+import com.example.messloc.data.model.OwnerSignupRequest;
+import com.example.messloc.data.model.OwnerSignupResponse;
 public class AuthRepository {
 
     private final AuthApiService apiService;
@@ -31,6 +33,13 @@ public class AuthRepository {
                 .create(AuthApiService.class);
 
         tokenManager = new TokenManager(context);
+    }
+
+    public interface OwnerSignupCallback {
+
+        void onSuccess(OwnerSignupResponse response);
+
+        void onError(String message);
     }
 
     public interface AuthCallback {
@@ -119,6 +128,13 @@ public class AuthRepository {
                                 authResponse.getExpiresInMs()
                         );
 
+                        if (authResponse.getUser() != null
+                                && authResponse.getUser().getRole() != null) {
+
+                            tokenManager.saveUserRole(
+                                    authResponse.getUser().getRole()
+                            );
+                        }
                         callback.onSuccess(authResponse);
 
                     } else {
@@ -148,6 +164,55 @@ public class AuthRepository {
             }
         });
     }
+
+//    SIGNUP OWNER
+public void registerOwner(
+        OwnerSignupRequest request,
+        OwnerSignupCallback callback
+) {
+
+    apiService.registerOwner(request).enqueue(
+            new Callback<OwnerSignupResponse>() {
+
+                @Override
+                public void onResponse(
+                        Call<OwnerSignupResponse> call,
+                        Response<OwnerSignupResponse> response
+                ) {
+
+                    Log.d("OWNER_SIGNUP", "URL: " + call.request().url());
+                    Log.d("OWNER_SIGNUP", "Status: " + response.code());
+
+                    if (response.isSuccessful()
+                            && response.body() != null
+                            && response.body().isSuccess()) {
+
+                        // Do not save a token.
+                        // Owner accounts remain pending verification.
+
+                        callback.onSuccess(response.body());
+
+                    } else {
+
+                        callback.onError(
+                                extractErrorMessage(response)
+                        );
+                    }
+                }
+
+                @Override
+                public void onFailure(
+                        Call<OwnerSignupResponse> call,
+                        Throwable t
+                ) {
+
+                    callback.onError(getNetworkError(t));
+                }
+            }
+    );
+}
+
+
 
     // EXTRACT BACKEND ERROR MESSAGE
     private String extractErrorMessage(

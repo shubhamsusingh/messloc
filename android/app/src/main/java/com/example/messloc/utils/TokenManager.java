@@ -1,3 +1,4 @@
+
 package com.example.messloc.utils;
 
 import android.content.Context;
@@ -8,6 +9,7 @@ public class TokenManager {
     private static final String PREF_NAME = "messloc_auth";
     private static final String KEY_TOKEN = "access_token";
     private static final String KEY_EXPIRY = "token_expiry";
+    private static final String KEY_ROLE = "user_role";
 
     private final SharedPreferences preferences;
 
@@ -25,6 +27,18 @@ public class TokenManager {
                 .putString(KEY_TOKEN, token)
                 .putLong(KEY_EXPIRY, expiryTime)
                 .apply();
+    }
+
+    // Save the logged-in user's role
+    public void saveUserRole(String role) {
+        preferences.edit()
+                .putString(KEY_ROLE, role)
+                .apply();
+    }
+
+    // Retrieve the logged-in user's role
+    public String getUserRole() {
+        return preferences.getString(KEY_ROLE, null);
     }
 
     public String getToken() {

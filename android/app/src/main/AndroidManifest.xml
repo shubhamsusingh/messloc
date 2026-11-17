@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Internet access for map tiles -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Network state -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Current device location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -12,6 +21,9 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.MessLoc">
+        <meta-data
+            android:name="org.osmdroid.config"
+            android:value="MessLoc/1.0 (contact: sriomsingh543@gmail.com)" />
 
         <activity
             android:name=".MainActivity"
@@ -32,6 +44,23 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.mess.MessDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.AccountTypeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.PersonalDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.owner.RegisterMessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.OwnerSignupActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.auth.SignupActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
@@ -39,7 +68,42 @@
             android:name=".ui.main.MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.admin.AdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AdminMessManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AdminOwnerManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.profile.MyMessesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.owner.PickLocationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.owner.OwnerMessDetailsActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ui.owner.EditMessActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".ui.owner.MenuManagementActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.payment.PaymentCheckoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.owner.CreateMenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.payment.DemoPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.payment.PaymentResultActivity"
+            android:exported="false" />
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
