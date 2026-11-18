@@ -1,33 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <import type="android.view.View"/>
-        <variable
-            name="authViewModel"
-            type="com.example.messloc.viewmodel.AuthViewModel" />
-
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/on_primary"
+        android:background="@color/screen_background"
         tools:context=".ui.auth.SignupActivity">
-
-
 
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:fillViewport="true"
-            android:clipToPadding="false"
             android:paddingHorizontal="24dp"
-            android:paddingVertical="32dp"
+            android:paddingVertical="28dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,180 +26,162 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <!-- Logo -->
                 <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginBottom="20dp"
-                    android:adjustViewBounds="true"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:layout_marginBottom="24dp"
                     android:contentDescription="@string/app_name"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/s_logo" />
+                    android:src="@drawable/s_logo"
+                    android:scaleType="fitCenter" />
 
-                <!-- Heading -->
                 <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/create_account"
+                    android:text="Create Your Account"
                     android:textAlignment="center"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="26sp"
                     android:textStyle="bold" />
 
-                <!-- Subtitle -->
                 <TextView
-                    android:id="@+id/subtitleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="42dp"
+                    android:alpha="0.7"
+                    android:gravity="center"
+
+                    android:text="Choose how you want to use MessLoc"
+                    android:textSize="15sp" />
+
+                <!-- Personal Account -->
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/personalCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="18dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="22dp">
+
+                        <ImageView
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:contentDescription="Personal account"
+                            android:src="@drawable/ic_profile_person"
+                            android:scaleType="fitCenter" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="18dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Personal Account"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textSize="17sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:alpha="0.7"
+                                android:text="Discover nearby messes, explore menus and subscribe to meals."
+                                android:textSize="13sp" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/arrow_forward"
+                            android:contentDescription="Continue" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Business Account -->
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/businessCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="28dp"
-                    android:gravity="center"
-                    android:alpha="0.7"
-                    android:text="@string/signup_subtitle"
-                    android:textSize="15sp" />
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
 
-                <!-- Name -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/nameInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Full Name"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:startIconDrawable="@drawable/person">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/nameEditText"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
-                        android:imeOptions="actionNext"
-                        android:singleLine="true"
-                        android:text="@={authViewModel.name}" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="22dp">
 
-                </com.google.android.material.textfield.TextInputLayout>
+                        <ImageView
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:contentDescription="Business account"
+                            android:src="@drawable/store"
+                            android:scaleType="fitCenter" />
 
-                <!-- Email -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/emailInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Email"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:startIconDrawable="@drawable/mail">
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="18dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/emailEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
-                        android:imeOptions="actionNext"
-                        android:singleLine="true"
-                        android:text="@={authViewModel.email}" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Business Account"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textSize="17sp"
+                                android:textStyle="bold" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:alpha="0.7"
+                                android:text="Register your mess business and manage your customers."
+                                android:textSize="13sp" />
 
-                <!-- Phone -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/phoneInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Phone"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:startIconDrawable="@drawable/mail">
+                        </LinearLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/phoneEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="phone"
-                        android:imeOptions="actionNext"
-                        android:singleLine="true"
-                        android:text="@={authViewModel.phone}" />
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/arrow_forward"
+                            android:contentDescription="Continue" />
 
-                </com.google.android.material.textfield.TextInputLayout>
-                <!-- Password -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/passwordInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Password"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/padlock">
+                    </LinearLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/passwordEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:imeOptions="actionNext"
-                        android:singleLine="true"
-                        android:text="@={authViewModel.password}" />
+                </com.google.android.material.card.MaterialCardView>
 
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Confirm Password -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/confirmPasswordInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:hint="Confirm Password"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/padlock">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/confirmPasswordEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:imeOptions="actionDone"
-                        android:singleLine="true"
-                        android:text="@={authViewModel.confirmPassword}" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Signup Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/signupButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginBottom="20dp"
-                    android:onClick="@{() -> authViewModel.register()}"
-                    android:text="@{authViewModel.loading ? `Submitting...` : `Sign Up`}"
-                    android:textSize="16sp"
-                    android:enabled="@{!authViewModel.loading}"
-                    android:textStyle="bold"
-                    android:backgroundTint="@color/primary"
-                    app:cornerRadius="12dp" />
-
-                <!-- Login -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -227,12 +196,12 @@
 
                     <TextView
                         android:id="@+id/loginTextView"
-
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="true"
                         android:text="Login"
+                        android:textColor="@color/primary"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -241,10 +210,6 @@
             </LinearLayout>
 
         </ScrollView>
-        <include
-            android:id="@+id/loadingOverlay"
-            layout="@layout/view_loading_overlay"
-            android:visibility="@{authViewModel.loading ? View.VISIBLE : View.GONE}"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

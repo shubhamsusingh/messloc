@@ -16,12 +16,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/on_primary"
+    android:background="@color/screen_background"
     tools:context=".ui.auth.LoginActivity">
-    <include
-        android:id="@+id/loadingOverlay"
-        layout="@layout/view_loading_overlay"
-        android:visibility="@{authViewModel.loading ? View.VISIBLE : View.GONE}"/>
+
+<!--@-->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -173,6 +171,7 @@
                     android:id="@+id/registerTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/primary"
                     android:focusable="true"
                     android:clickable="true"
                     android:paddingHorizontal="4dp"
@@ -186,5 +185,10 @@
 
     </ScrollView>
 
+    <include
+        android:id="@+id/loadingOverlay"
+        layout="@layout/view_loading_overlay"
+        android:visibility="@{authViewModel.loading ? View.VISIBLE : View.GONE}"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

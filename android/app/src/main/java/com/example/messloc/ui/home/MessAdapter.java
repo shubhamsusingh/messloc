@@ -1,6 +1,9 @@
 package com.example.messloc.ui.home;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.messloc.R;
 import com.example.messloc.data.model.Mess;
+import com.example.messloc.ui.mess.MessDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +31,15 @@ public class MessAdapter extends RecyclerView.Adapter<MessAdapter.MessViewHolder
 
     private static final int COLOR_VEG = Color.parseColor("#2E7D32");
     private static final int COLOR_NON_VEG = Color.parseColor("#C62828");
-
+    private final Context context;
     private final List<Mess> messList = new ArrayList<>();
     @Nullable
     private OnMessClickListener clickListener;
+
+    public MessAdapter(Context context, List<Mess> messList) {
+        this.context = context;
+        this.messList.addAll(messList);
+    }
 
     public void setOnMessClickListener(@Nullable OnMessClickListener listener) {
         this.clickListener = listener;
@@ -76,6 +85,11 @@ public class MessAdapter extends RecyclerView.Adapter<MessAdapter.MessViewHolder
         holder.tvFoodType.setTextColor(typeColor);
         holder.ivVegMark.setColorFilter(typeColor);
 
+        // Rating badge
+        holder.tvRating.setText(
+                String.format(Locale.getDefault(), "%.1f (%d+)", mess.getRating(), mess.getReviewCount())
+        );
+
         // Timing
         holder.tvTiming.setText(
                 formatTime(mess.getOpeningTime()) + " – " + formatTime(mess.getClosingTime())
@@ -118,6 +132,11 @@ public class MessAdapter extends RecyclerView.Adapter<MessAdapter.MessViewHolder
         View.OnClickListener onClick = v -> {
             if (clickListener != null) {
                 clickListener.onMessClick(mess);
+            } else {
+                Intent intent = new Intent(context, MessDetailActivity.class);
+                intent.putExtra("mess_id", mess.getId());
+                intent.putExtra("mess_data", mess);
+                context.startActivity(intent);
             }
         };
         holder.itemView.setOnClickListener(onClick);
@@ -149,7 +168,7 @@ public class MessAdapter extends RecyclerView.Adapter<MessAdapter.MessViewHolder
 
     static class MessViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvName, tvLocation, tvFoodType, tvTiming,
+        TextView tvName, tvLocation, tvFoodType, tvRating, tvTiming,
                 tvDescription, tvPrice, btnViewMess;
         ImageView ivVegMark, ivMessImage;
         LinearLayout layoutFacilities;
@@ -160,6 +179,7 @@ public class MessAdapter extends RecyclerView.Adapter<MessAdapter.MessViewHolder
             tvName = itemView.findViewById(R.id.tvMessName);
             tvLocation = itemView.findViewById(R.id.tvMessLocation);
             tvFoodType = itemView.findViewById(R.id.tvFoodType);
+            tvRating = itemView.findViewById(R.id.tvRating);
             ivMessImage = itemView.findViewById(R.id.ivMessImage);
             ivVegMark = itemView.findViewById(R.id.ivVegMark);
             tvTiming = itemView.findViewById(R.id.tvMessTiming);

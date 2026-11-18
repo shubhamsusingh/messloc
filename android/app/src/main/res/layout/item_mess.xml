@@ -75,6 +75,36 @@
                 android:textSize="11sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/badgeRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_badge_rating"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="6dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="3dp">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:contentDescription="Rating"
+                android:src="@drawable/ic_star_filled" />
+
+            <TextView
+                android:id="@+id/tvRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:textColor="#B45309"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="4.5 (85+)" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Address -->
@@ -161,7 +191,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
-        android:background="#EEF1F5" />
+        android:background="@color/card_stroke" />
 
     <!-- Price + CTA -->
     <LinearLayout
@@ -206,5 +236,6 @@
             android:textColor="@color/white"
             android:textSize="13sp"
             android:textStyle="bold" />
+
     </LinearLayout>
 </LinearLayout>

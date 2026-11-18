@@ -1,17 +1,23 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data>
+        <import type="android.view.View" />
+
         <variable
             name="authViewModel"
             type="com.example.messloc.viewmodel.AuthViewModel" />
-
     </data>
+
     <FrameLayout
+        android:id="@+id/loadingOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#66000000"
+        android:background="#99000000"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone">
+        android:elevation="20dp"
+        android:visibility="@{authViewModel.loading ? View.VISIBLE : View.GONE}">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -19,23 +25,26 @@
             android:layout_gravity="center"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="28dp"
+            android:minWidth="150dp"
+            android:padding="24dp"
             android:background="@drawable/bg_loading_card">
 
-            <ProgressBar
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:indeterminate="true"
-                android:indeterminateTint="@color/primary" />
+                app:indicatorSize="40dp"
+                app:trackThickness="4dp"
+                app:indicatorColor="@color/primary" />
 
             <TextView
                 android:id="@+id/loadingMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:text="Please wait..."
+                android:layout_marginTop="12dp"
+                android:text="@{authViewModel.loadingMessage}"
                 android:textColor="#222222"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
